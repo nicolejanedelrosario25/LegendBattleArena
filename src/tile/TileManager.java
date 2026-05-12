@@ -7,6 +7,9 @@ package tile;
 import game.GamePanel;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -18,6 +21,8 @@ public class TileManager {
     public Tile[] tile;
     public int[][] mapTileNum;
 
+    BufferedImage mapImage;
+
     public TileManager(GamePanel gp) {
         this.gp = gp;
         tile = new Tile[3];
@@ -25,41 +30,51 @@ public class TileManager {
 
         getTileImage();
         loadMap();
+        loadMapImage();
     }
 
     public void getTileImage() {
-        tile[0] = new Tile(Color.darkGray, false); // floor
-        tile[1] = new Tile(Color.gray, true);      // wall
-        tile[2] = new Tile(Color.green, false);    // grass
+        tile[0] = new Tile(java.awt.Color.darkGray, false);
+        tile[1] = new Tile(java.awt.Color.gray, true);
+        tile[2] = new Tile(java.awt.Color.green, false);
+    }
+
+    public void loadMapImage() {
+        try {
+            mapImage = ImageIO.read(
+                    getClass().getResourceAsStream("/resources/map/battlemap.png"));
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void loadMap() {
-        int[][] map = {
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1},
-            {1,0,2,2,0,0,0,1,1,0,0,0,2,0,0,1},
-            {1,0,0,0,0,2,0,0,0,0,2,0,0,0,0,1},
-            {1,0,0,1,0,0,0,2,0,0,0,0,1,0,0,1},
-            {1,0,0,1,0,0,0,0,0,2,0,0,1,0,0,1},
-            {1,0,0,0,0,2,0,0,0,0,0,0,0,0,0,1},
-            {1,0,2,0,0,0,0,1,1,0,2,0,0,2,0,1},
-            {1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,1,1,0,2,0,0,0,0,2,0,0,0,1},
-            {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-        };
+    int[][] map = {
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1},
+        {1,0,2,2,0,0,0,1,1,0,0,0,2,0,0,1},
+        {1,0,0,0,0,2,0,0,0,0,2,0,0,0,0,1},
+        {1,0,0,1,0,0,0,2,0,0,0,0,1,0,0,1},
+        {1,0,0,1,0,0,0,0,0,2,0,0,1,0,0,1},
+        {1,0,0,0,0,2,0,0,0,0,0,0,0,0,0,1},
+        {1,0,2,0,0,0,0,1,1,0,2,0,0,2,0,1},
+        {1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,1,1,0,2,0,0,0,0,2,0,0,0,1},
+        {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+    };
 
-        mapTileNum = map;
-    }
+    mapTileNum = map;
+}
 
     public void draw(Graphics2D g2) {
-        for(int row = 0; row < 12; row++) {
-            for(int col = 0; col < 16; col++) {
-                int tileNum = mapTileNum[row][col];
-
-                g2.setColor(tile[tileNum].color);
-                g2.fillRect(col * 48, row * 48, 48, 48);
-            }
-        }
+        g2.drawImage(
+                mapImage,
+                0,
+                0,
+                gp.tileSize * gp.maxScreenCol,
+                gp.tileSize * gp.maxScreenRow,
+                null
+        );
     }
 }

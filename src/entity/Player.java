@@ -22,7 +22,13 @@ public class Player extends Entity {
     GamePanel gp;
     KeyHandler keyH;
 
-    BufferedImage up, down, left, right;
+    BufferedImage up1, up2;
+    BufferedImage down1, down2;
+    BufferedImage left1, left2;
+    BufferedImage right1, right2;
+
+    int spriteCounter = 0;
+    int spriteNum = 1;
 
     public Player(GamePanel gp, KeyHandler keyH) {
 
@@ -41,41 +47,55 @@ public class Player extends Entity {
         direction = "down";
     }
 
-    public void getPlayerImage() {
+   public void getPlayerImage() {
 
-        try {
-            up = ImageIO.read(getClass().getResourceAsStream("/resources/player/up.png"));
-            down = ImageIO.read(getClass().getResourceAsStream("/resources/player/down.png"));
-            left = ImageIO.read(getClass().getResourceAsStream("/resources/player/left.png"));
-            right = ImageIO.read(getClass().getResourceAsStream("/resources/player/right.png"));
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+    try {
+        up1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_up_1.png"));
+        up2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_up_2.png"));
+
+        down1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_down_1.png"));
+        down2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_down_2.png"));
+
+        left1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_left_1.png"));
+        left2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_left_2.png"));
+
+        right1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_right_1.png"));
+        right2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_right_2.png"));
+
+    } catch(Exception e) {
+        e.printStackTrace();
     }
+}
 
     public void update() {
 
         int nextX = x;
         int nextY = y;
 
+        boolean moving = false;
+
         if(keyH.upPressed) {
             nextY -= speed;
             direction = "up";
+            moving = true;
         }
 
         if(keyH.downPressed) {
             nextY += speed;
             direction = "down";
+            moving = true;
         }
 
         if(keyH.leftPressed) {
             nextX -= speed;
             direction = "left";
+            moving = true;
         }
 
         if(keyH.rightPressed) {
             nextX += speed;
             direction = "right";
+            moving = true;
         }
 
         boolean collision = gp.cChecker.checkTile(this, nextX, nextY);
@@ -83,6 +103,22 @@ public class Player extends Entity {
         if(!collision) {
             x = nextX;
             y = nextY;
+        }
+
+        if(moving) {
+
+            spriteCounter++;
+
+            if(spriteCounter > 10) {
+
+                if(spriteNum == 1) {
+                    spriteNum = 2;
+                } else {
+                    spriteNum = 1;
+                }
+
+                spriteCounter = 0;
+            }
         }
 
         checkEnemyCollision();
@@ -109,6 +145,7 @@ public class Player extends Entity {
                 playerTop < enemyBottom;
 
         if(touchingEnemy) {
+
             gp.battleManager.startBattle(gp.enemy);
 
             x = 100;
@@ -118,16 +155,39 @@ public class Player extends Entity {
 
     public void draw(Graphics2D g2) {
 
-        BufferedImage image = down;
+        BufferedImage image = down1;
 
         if(direction.equals("up")) {
-            image = up;
+
+            if(spriteNum == 1) {
+                image = up1;
+            } else {
+                image = up2;
+            }
+
         } else if(direction.equals("down")) {
-            image = down;
+
+            if(spriteNum == 1) {
+                image = down1;
+            } else {
+                image = down2;
+            }
+
         } else if(direction.equals("left")) {
-            image = left;
+
+            if(spriteNum == 1) {
+                image = left1;
+            } else {
+                image = left2;
+            }
+
         } else if(direction.equals("right")) {
-            image = right;
+
+            if(spriteNum == 1) {
+                image = right1;
+            } else {
+                image = right2;
+            }
         }
 
         g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);

@@ -15,27 +15,24 @@ public class CollisionChecker {
     GamePanel gp;
 
     public CollisionChecker(GamePanel gp) {
-    this.gp = gp;
-}
+        this.gp = gp;
+    }
 
     public boolean checkTile(Player player, int nextX, int nextY) {
 
         int leftCol = nextX / gp.tileSize;
-        int rightCol = (nextX + 40) / gp.tileSize;
+        int rightCol = (nextX + gp.tileSize - 1) / gp.tileSize;
 
         int topRow = nextY / gp.tileSize;
-        int bottomRow = (nextY + 40) / gp.tileSize;
+        int bottomRow = (nextY + gp.tileSize - 1) / gp.tileSize;
 
-        // SCREEN LIMITS
         if(leftCol < 0 || rightCol >= gp.maxScreenCol ||
            topRow < 0 || bottomRow >= gp.maxScreenRow) {
-
             return true;
         }
 
         int tile1 = gp.tileM.mapTileNum[topRow][leftCol];
         int tile2 = gp.tileM.mapTileNum[topRow][rightCol];
-
         int tile3 = gp.tileM.mapTileNum[bottomRow][leftCol];
         int tile4 = gp.tileM.mapTileNum[bottomRow][rightCol];
 
