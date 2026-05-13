@@ -36,11 +36,16 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_ENTER) {
 
             if(gp.gameState == gp.titleState) {
-
+                
+                
                 gp.chooseHeroes();
                 gp.setupItems();
-
+                
                 gp.gameState = gp.playState;
+                
+                gp.repaint();
+                
+                gp.requestFocusInWindow();
             }
         }
 

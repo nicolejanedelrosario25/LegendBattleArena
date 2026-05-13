@@ -4,6 +4,7 @@
  */
 package entity;
 
+import game.GamePanel;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -15,19 +16,20 @@ import javax.imageio.ImageIO;
  * @author nicol
  */
 public class Enemy extends Entity {
-
+    
     public String name;
     public int hp;
     public int maxHp;
     public int attackPower;
 
     BufferedImage image;
-
-    public Enemy(String name, int x, int y, int hp, int attackPower) {
-
+    GamePanel gp;
+    
+    public Enemy(GamePanel gp, String name, int x, int y, int hp, int attackPower) {
+        this.gp = gp;
         this.name = name;
-        this.x = x;
-        this.y = y;
+        this.worldX = x;
+        this.worldY = y;
         this.hp = hp;
         this.maxHp = hp;
         this.attackPower = attackPower;
@@ -63,19 +65,21 @@ public class Enemy extends Entity {
     }
 
     public void draw(Graphics2D g2) {
-
+        int screenX = worldX - gp.player.worldX + gp.player.screenX;
+        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+        
         if(image != null) {
-            g2.drawImage(image, x, y, 48, 48, null);
+            g2.drawImage(image, screenX, screenY, 48, 48, null);
         } else {
             g2.setColor(Color.red);
-            g2.fillOval(x, y, 40, 40);
+            g2.fillOval(screenX, screenY, 40, 40);
         }
 
         g2.setColor(Color.white);
-        g2.drawString(name, x - 5, y - 15);
+        g2.drawString(name, screenX - 5, screenY - 15);
 
         g2.setColor(Color.black);
-        g2.fillRect(x, y - 10, 48, 6);
+        g2.fillRect(screenX, screenY - 10, 48, 6);
 
         g2.setColor(Color.red);
 
@@ -85,6 +89,6 @@ public class Enemy extends Entity {
             hpBarWidth = 0;
         }
 
-        g2.fillRect(x, y - 10, hpBarWidth, 6);
+        g2.fillRect(screenX, screenY - 10, hpBarWidth, 6);
     }
 }

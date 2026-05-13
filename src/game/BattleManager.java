@@ -93,8 +93,8 @@ public class BattleManager {
 
                     gp.message = "You fled from battle.";
 
-                    gp.player.x = 100;
-                    gp.player.y = 100;
+                    gp.player.worldX = 100;
+                    gp.player.worldY = 100;
 
                     return;
                 }
@@ -130,8 +130,8 @@ public class BattleManager {
 
                         gp.message = "Victory! All waves cleared.";
 
-                        gp.player.x = 100;
-                        gp.player.y = 100;
+                        gp.player.worldX = 100;
+                        gp.player.worldY = 100;
 
                     } else {
 
@@ -147,8 +147,8 @@ public class BattleManager {
                             gp.openShop();
                         }
 
-                        gp.player.x = 100;
-                        gp.player.y = 100;
+                        gp.player.worldX = 100;
+                        gp.player.worldY = 100;
 
                         gp.startNextWave();
                     }
@@ -173,8 +173,8 @@ public class BattleManager {
 
                 gp.message = "Defeat. All heroes were defeated.";
 
-                gp.player.x = 100;
-                gp.player.y = 100;
+                gp.player.worldX = 100;
+                gp.player.worldY = 100;
 
                 return;
             }

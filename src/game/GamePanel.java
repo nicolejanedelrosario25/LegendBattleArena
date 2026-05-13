@@ -33,13 +33,18 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxScreenCol = 16;
     public final int maxScreenRow = 12;
 
-    final int screenWidth = tileSize * maxScreenCol;
-    final int screenHeight = tileSize * maxScreenRow;
-
+    public final int screenWidth = tileSize * maxScreenCol;
+    public final int screenHeight = tileSize * maxScreenRow;
+    
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final int worldWidth = tileSize * maxWorldCol;
+    public final int worldHeight = tileSize * maxWorldRow;
+    
     Thread gameThread;
 
     KeyHandler keyH = new KeyHandler(this);
-    Player player = new Player(this, keyH);
+    public Player player = new Player(this, keyH);
 
     public TileManager tileM = new TileManager(this);
     public CollisionChecker cChecker = new CollisionChecker(this);
@@ -137,17 +142,17 @@ public class GamePanel extends JPanel implements Runnable {
     public void startNextWave() {
 
         if(currentWave == 1) {
-            enemy = new Enemy("Slime", 500, 300, 50, 10);
+            enemy = new Enemy(this, "Slime", 500, 300, 50, 10);
         } else if(currentWave == 2) {
-            enemy = new Enemy("Goblin", 500, 300, 70, 15);
+            enemy = new Enemy(this, "Goblin", 500, 300, 70, 15);
         } else if(currentWave == 3) {
-            enemy = new Enemy("Skeleton", 500, 300, 90, 18);
+            enemy = new Enemy(this,"Skeleton", 500, 300, 90, 18);
         } else if(currentWave == 4) {
-            enemy = new Enemy("Orc", 500, 300, 120, 22);
+            enemy = new Enemy(this,"Orc", 500, 300, 120, 22);
         } else if(currentWave == 5) {
-            enemy = new Enemy("Dark Mage", 500, 300, 140, 25);
+            enemy = new Enemy(this,"Dark Mage", 500, 300, 140, 25);
         } else if(currentWave == 6) {
-            enemy = new Enemy("Dragon Boss", 500, 300, 200, 35);
+            enemy = new Enemy(this,"Dragon Boss", 500, 300, 200, 35);
         }
 
         message = "Wave " + currentWave + " started!";

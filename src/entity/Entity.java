@@ -4,14 +4,19 @@
  */
 package entity;
 
+import java.awt.Rectangle;
+
 /**
  *
  * @author nicol
  */
 public class Entity {
-    public int x;
-    public int y;
+    public int worldX;
+    public int worldY;
     public int speed;
 
     public String direction;
+    
+    public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+    public boolean collisionOn = false;
 }

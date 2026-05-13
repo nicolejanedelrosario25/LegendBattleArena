@@ -8,6 +8,7 @@ import game.GamePanel;
 import game.KeyHandler;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -21,6 +22,7 @@ public class Player extends Entity {
 
     GamePanel gp;
     KeyHandler keyH;
+    
 
     BufferedImage up1, up2;
     BufferedImage down1, down2;
@@ -29,20 +31,30 @@ public class Player extends Entity {
 
     int spriteCounter = 0;
     int spriteNum = 1;
+<<<<<<< HEAD
+=======
+    public final int screenX;
+    public final int screenY;
+>>>>>>> c458095 (Adding enemy sprites and map)
 
     public Player(GamePanel gp, KeyHandler keyH) {
 
         this.gp = gp;
         this.keyH = keyH;
-
+        
+        solidArea = new Rectangle(8, 16, 32, 32);
+        
+        screenX = gp.screenWidth/2 - (gp.tileSize/2);
+        screenY = gp.screenHeight/2 - (gp.tileSize/2);
+        
         setDefaultValues();
         getPlayerImage();
     }
 
     public void setDefaultValues() {
 
-        x = 100;
-        y = 100;
+        worldX = gp.tileSize * 23;
+        worldY = gp.tileSize * 21;
         speed = 4;
         direction = "down";
     }
@@ -69,8 +81,10 @@ public class Player extends Entity {
 
     public void update() {
 
-        int nextX = x;
-        int nextY = y;
+        int nextX = worldX;
+        int nextY = worldY;
+
+        boolean moving = false;
 
         boolean moving = false;
 
@@ -99,10 +113,26 @@ public class Player extends Entity {
         }
 
         boolean collision = gp.cChecker.checkTile(this, nextX, nextY);
-
+  
         if(!collision) {
-            x = nextX;
-            y = nextY;
+            worldX = nextX;
+            worldY = nextY;
+        }
+
+        if(moving) {
+
+            spriteCounter++;
+
+            if(spriteCounter > 10) {
+
+                if(spriteNum == 1) {
+                    spriteNum = 2;
+                } else {
+                    spriteNum = 1;
+                }
+
+                spriteCounter = 0;
+            }
         }
 
         if(moving) {
@@ -128,15 +158,15 @@ public class Player extends Entity {
 
         if(gp.enemy == null) return;
 
-        int playerLeft = x;
-        int playerRight = x + 40;
-        int playerTop = y;
-        int playerBottom = y + 40;
+        int playerLeft = worldX;
+        int playerRight = worldX + 40;
+        int playerTop = worldY;
+        int playerBottom = worldY + 40;
 
-        int enemyLeft = gp.enemy.x;
-        int enemyRight = gp.enemy.x + 40;
-        int enemyTop = gp.enemy.y;
-        int enemyBottom = gp.enemy.y + 40;
+        int enemyLeft = gp.enemy.worldX;
+        int enemyRight = gp.enemy.worldX + 40;
+        int enemyTop = gp.enemy.worldY;
+        int enemyBottom = gp.enemy.worldY + 40;
 
         boolean touchingEnemy =
                 playerRight > enemyLeft &&
@@ -148,8 +178,8 @@ public class Player extends Entity {
 
             gp.battleManager.startBattle(gp.enemy);
 
-            x = 100;
-            y = 100;
+            worldX = 100;
+            worldY = 100;
         }
     }
 
@@ -190,6 +220,6 @@ public class Player extends Entity {
             }
         }
 
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
 }
