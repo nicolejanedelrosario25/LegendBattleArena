@@ -31,11 +31,9 @@ public class Player extends Entity {
 
     int spriteCounter = 0;
     int spriteNum = 1;
-<<<<<<< HEAD
-=======
+
     public final int screenX;
     public final int screenY;
->>>>>>> c458095 (Adding enemy sprites and map)
 
     public Player(GamePanel gp, KeyHandler keyH) {
 
@@ -83,8 +81,6 @@ public class Player extends Entity {
 
         int nextX = worldX;
         int nextY = worldY;
-
-        boolean moving = false;
 
         boolean moving = false;
 

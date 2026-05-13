@@ -8,14 +8,11 @@ import game.GamePanel;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-<<<<<<< HEAD
 import java.io.IOException;
-=======
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
->>>>>>> c458095 (Adding enemy sprites and map)
 import javax.imageio.ImageIO;
 
 /**
@@ -27,8 +24,6 @@ public class TileManager {
     GamePanel gp;
     public Tile[] tile;
     public int[][] mapTileNum;
-    
-    BufferedImage mapImage;
 
     BufferedImage mapImage;
 
@@ -38,25 +33,7 @@ public class TileManager {
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
-<<<<<<< HEAD
-        loadMap();
-        loadMapImage();
-    }
-
-    public void getTileImage() {
-        tile[0] = new Tile(java.awt.Color.darkGray, false);
-        tile[1] = new Tile(java.awt.Color.gray, true);
-        tile[2] = new Tile(java.awt.Color.green, false);
-    }
-
-    public void loadMapImage() {
-        try {
-            mapImage = ImageIO.read(
-                    getClass().getResourceAsStream("/resources/map/battlemap.png"));
-        } catch(IOException e) {
-=======
         loadMap("/resources/maps/map.txt");
-//        loadMapImage();
     }
 
     public void getTileImage() {
@@ -81,49 +58,9 @@ public class TileManager {
             tile[5] = new Tile();
             tile[5].image = ImageIO.read(getClass().getResourceAsStream("/resources/tiles/water.png"));
         }catch(IOException e){
->>>>>>> c458095 (Adding enemy sprites and map)
             e.printStackTrace();
         }
     }
-
-<<<<<<< HEAD
-    public void loadMap() {
-    int[][] map = {
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1},
-        {1,0,2,2,0,0,0,1,1,0,0,0,2,0,0,1},
-        {1,0,0,0,0,2,0,0,0,0,2,0,0,0,0,1},
-        {1,0,0,1,0,0,0,2,0,0,0,0,1,0,0,1},
-        {1,0,0,1,0,0,0,0,0,2,0,0,1,0,0,1},
-        {1,0,0,0,0,2,0,0,0,0,0,0,0,0,0,1},
-        {1,0,2,0,0,0,0,1,1,0,2,0,0,2,0,1},
-        {1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,1,1,0,2,0,0,0,0,2,0,0,0,1},
-        {1,0,0,0,0,0,0,0,2,0,0,0,0,0,0,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-    };
-
-    mapTileNum = map;
-}
-
-    public void draw(Graphics2D g2) {
-        g2.drawImage(
-                mapImage,
-                0,
-                0,
-                gp.tileSize * gp.maxScreenCol,
-                gp.tileSize * gp.maxScreenRow,
-                null
-        );
-=======
-//    public void loadMapImage() {
-//        try {
-//            mapImage = ImageIO.read(
-//                    getClass().getResourceAsStream("/resources/map/battlemap.png"));
-//        } catch(IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public void loadMap(String filePath) {
         try{
@@ -178,7 +115,6 @@ public class TileManager {
                 worldRow++;
 
             }
-        } 
->>>>>>> c458095 (Adding enemy sprites and map)
+        }
     }
 }
