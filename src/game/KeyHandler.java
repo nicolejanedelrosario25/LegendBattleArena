@@ -43,7 +43,6 @@ public class KeyHandler implements KeyListener {
                 
                 gp.gameState = gp.playState;
                 
-                gp.repaint();
                 
                 gp.requestFocusInWindow();
             }
