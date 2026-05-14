@@ -94,8 +94,12 @@ public class BattleManager {
             }
 
             // FLEE
-            else if(choice == 3) {
+           else if(choice == 3) {
 
+            if(gp.currentWave == 6) {
+                gp.message = "You cannot flee from the final boss!";
+                JOptionPane.showMessageDialog(null, "You cannot flee from the Dragon Lord!");
+            } else {
                 gp.message = "You fled from battle.";
 
                 gp.player.worldX = gp.tileSize * 12;
@@ -103,10 +107,7 @@ public class BattleManager {
 
                 return;
             }
-
-            else {
-                gp.message = "Invalid action.";
-            }
+        }
 
             // ENEMY DEFEATED
             if(enemy.hp <= 0) {

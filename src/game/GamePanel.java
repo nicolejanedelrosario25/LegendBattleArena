@@ -36,12 +36,12 @@ public class GamePanel extends JPanel implements Runnable {
 
     public final int screenWidth = tileSize * maxScreenCol;
     public final int screenHeight = tileSize * maxScreenRow;
-    
+
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
     public final int worldWidth = tileSize * maxWorldCol;
     public final int worldHeight = tileSize * maxWorldRow;
-    
+
     Thread gameThread;
 
     KeyHandler keyH = new KeyHandler(this);
@@ -67,9 +67,11 @@ public class GamePanel extends JPanel implements Runnable {
     public int gameState;
     public final int titleState = 0;
     public final int playState = 1;
-    
+
     public UI ui = new UI(this);
     public int characterState = 2;
+
+    private long lastHeroPickTime = 0;
 
     public GamePanel() {
 
@@ -81,7 +83,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
 
         gameState = titleState;
-        
+
         MouseHandler mouseH = new MouseHandler(this);
         this.addMouseListener(mouseH);
         this.addMouseMotionListener(mouseH);
@@ -89,52 +91,43 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void chooseHeroes() {
 
-      if(party.size() < 3){
-          if(ui.commandNum == 0){
-              party.add(new Warrior());
-          }else if(ui.commandNum == 1){
-              party.add(new Mage());
-          }else if (ui.commandNum == 2){
-              party.add(new Tank());
-          }else if (ui.commandNum == 3){
-              party.add(new Healer());
-          }else if(ui.commandNum == 4){
-              party.add(new Archer());
-          }
-          
-          System.out.println("Hero Added! Party size: " + party.size());
-      }
+        long currentTime = System.currentTimeMillis();
 
-    if(party.size() >= 3) {
-        return;
+        if(currentTime - lastHeroPickTime < 300) {
+            return;
+        }
 
+        lastHeroPickTime = currentTime;
+
+        if(party.size() >= 3) {
+            return;
+        }
+
+        switch(ui.commandNum) {
+
+            case 0:
+                party.add(new Warrior());
+                break;
+
+            case 1:
+                party.add(new Mage());
+                break;
+
+            case 2:
+                party.add(new Tank());
+                break;
+
+            case 3:
+                party.add(new Healer());
+                break;
+
+            case 4:
+                party.add(new Archer());
+                break;
+        }
+
+        System.out.println("Hero Added! Party size: " + party.size());
     }
-
-    switch(ui.commandNum) {
-
-        case 0:
-            party.add(new Warrior());
-            break;
-
-        case 1:
-            party.add(new Mage());
-            break;
-
-        case 2:
-            party.add(new Tank());
-            break;
-
-        case 3:
-            party.add(new Healer());
-            break;
-
-        case 4:
-            party.add(new Archer());
-            break;
-    }
-
-    System.out.println("Hero Added! Party size: " + party.size());
-}
 
     public void setupItems() {
 
@@ -147,100 +140,107 @@ public class GamePanel extends JPanel implements Runnable {
         startNextWave();
     }
 
-  public void startNextWave() {
+    public void startNextWave() {
 
-    if(currentWave == 1) {
+        if(currentWave == 1) {
 
-        enemy = new Enemy(
-                this,
-                "Slime",
-                tileSize * 28,
-                tileSize * 12,
-                50,
-                10
-        );
+            message = "Wave 1 started! Find the enemy.";
 
-    } else if(currentWave == 2) {
+            enemy = new Enemy(
+                    this,
+                    "Slime",
+                    tileSize * 18,
+                    tileSize * 8,
+                    50,
+                    10
+            );
+        }
 
-        enemy = new Enemy(
-                this,
-                "Goblin",
-                tileSize * 24,
-                tileSize * 10,
-                70,
-                15
-        );
+        else if(currentWave == 2) {
 
-    } else if(currentWave == 3) {
+            message = "Wave 2 started! Find the enemy.";
 
-        enemy = new Enemy(
-                this,
-                "Skeleton",
-                tileSize * 35,
-                tileSize * 18,
-                90,
-                18
-        );
+            enemy = new Enemy(
+                    this,
+                    "Goblin",
+                    tileSize * 22,
+                    tileSize * 15,
+                    90,
+                    18
+            );
+        }
 
-    } else if(currentWave == 4) {
+        else if(currentWave == 3) {
 
-        enemy = new Enemy(
-                this,
-                "Goblin",
-                tileSize * 20,
-                tileSize * 25,
-                120,
-                22
-        );
+            message = "Wave 3 started! Find the enemy.";
 
-    } else if(currentWave == 5) {
+            enemy = new Enemy(
+                    this,
+                    "Skeleton",
+                    tileSize * 10,
+                    tileSize * 18,
+                    130,
+                    24
+            );
+        }
 
-        enemy = new Enemy(
-                this,
-                "Skeleton",
-                tileSize * 40,
-                tileSize * 30,
-                150,
-                28
-        );
+        else if(currentWave == 4) {
 
-    } else if(currentWave == 6) {
+            message = "Wave 4 started! Find the enemy.";
+
+            enemy = new Enemy(
+                    this,
+                    "Goblin",
+                    tileSize * 26,
+                    tileSize * 9,
+                    180,
+                    30
+            );
+        }
+
+        else if(currentWave == 5) {
+
+            message = "Wave 5 started! Find the enemy.";
+
+            enemy = new Enemy(
+                    this,
+                    "Skeleton",
+                    tileSize * 6,
+                    tileSize * 20,
+                    250,
+                    38
+            );
+        }
+
+        else if(currentWave == 6) {
 
         JOptionPane.showMessageDialog(
                 null,
-                "Be careful!\n\nThe Goblin Lord has appeared!\nThis is the final wave!",
-                "Final Wave",
+                "WARNING!\n\n" +
+                "The Dragon Lord has appeared!\n" +
+                "Prepare for the final battle!",
+                "FINAL BOSS",
                 JOptionPane.WARNING_MESSAGE
         );
 
+        message = "Final Wave! Defeat the Dragon Lord!";
+
         enemy = new Enemy(
                 this,
-                "Goblin Lord",
-                tileSize * 25,
-                tileSize * 13,
-                220,
-                35
+                "Dragon",
+                tileSize * 30,
+                tileSize * 14,
+                450,
+                55
         );
-
-    } else {
-
-        enemy = null;
-
-        JOptionPane.showMessageDialog(
-                null,
-                "CONGRATULATIONS!\n\n" +
-                "You defeated all enemy waves!\n\n" +
-                "Enemies Defeated: " + enemiesDefeated +
-                "\nTurns Taken: " + turnsTaken +
-                "\nGold Earned: " + gold
-        );
-
-        return;
     }
 
-    message = "Wave " + currentWave + " started!";
-}
-   
+        else {
+            enemy = null;
+            message = "Victory! All waves cleared.";
+        }
+    }
+
     public void openShop() {
 
         String[] choices = {
@@ -274,7 +274,9 @@ public class GamePanel extends JPanel implements Runnable {
                 } else {
                     JOptionPane.showMessageDialog(null, "Not enough gold.");
                 }
-            } else if(choice == 1) {
+            }
+
+            else if(choice == 1) {
                 if(gold >= 25) {
                     gold -= 25;
                     inventory.add(new Item("Mana Elixir", "Boosts skill damage.", "boost"));
@@ -282,7 +284,9 @@ public class GamePanel extends JPanel implements Runnable {
                 } else {
                     JOptionPane.showMessageDialog(null, "Not enough gold.");
                 }
-            } else if(choice == 2) {
+            }
+
+            else if(choice == 2) {
                 if(gold >= 40) {
                     gold -= 40;
                     inventory.add(new Item("Revive Scroll", "Revives a hero.", "revive"));
@@ -290,7 +294,9 @@ public class GamePanel extends JPanel implements Runnable {
                 } else {
                     JOptionPane.showMessageDialog(null, "Not enough gold.");
                 }
-            } else {
+            }
+
+            else {
                 shopping = false;
             }
         }
@@ -328,9 +334,10 @@ public class GamePanel extends JPanel implements Runnable {
 
         if(gameState == playState) {
             player.update();
-        }
-        if(enemy != null) {
-            enemy.update();
+
+            if(enemy != null) {
+                enemy.update();
+            }
         }
     }
 
@@ -343,10 +350,11 @@ public class GamePanel extends JPanel implements Runnable {
         if(gameState == titleState) {
             ui.draw(g2);
         }
-        
-        else if(gameState == characterState){
+
+        else if(gameState == characterState) {
             ui.draw(g2);
-        }  
+        }
+
         else if(gameState == playState) {
 
             tileM.draw(g2);
@@ -362,8 +370,8 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString("Gold: " + gold, 20, 40);
             g2.drawString("Items: " + inventory.size(), 20, 60);
             g2.drawString(message, 20, 85);
-        }      
-             
+        }
+
         g2.dispose();
     }
 }

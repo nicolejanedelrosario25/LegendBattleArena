@@ -7,8 +7,10 @@ package entity;
 import game.GamePanel;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -24,6 +26,7 @@ public class Enemy extends Entity {
     public int attackPower;
 
     BufferedImage image1, image2;
+    Image gifImage;
 
     int spriteCounter = 0;
     int spriteNum = 1;
@@ -49,18 +52,25 @@ public class Enemy extends Entity {
                 image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_1.png"));
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_2.png"));
 
-            } else if(name.equals("Goblin") || name.equals("Goblin Lord")) {
+            } else if(name.equals("Goblin")) {
                 image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/gobline_idle_1.png"));
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/goblin_idle_2.png"));
 
             } else if(name.equals("Skeleton")) {
                 image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_1.png"));
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_2.png"));
-            } else if(name.equals("Dragon")){
-                
-            }else {
-                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_1.png"));
 
+            } else if(name.equals("Dragon")) {
+                ImageIcon icon = new ImageIcon(
+                        getClass().getResource("/resources/enemy/dragon_idle.gif")
+                );
+
+                gifImage = icon.getImage();
+                image1 = null;
+                image2 = null;
+
+            } else {
+                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_1.png"));
                 image2 = image1;
             }
 
@@ -116,15 +126,18 @@ public class Enemy extends Entity {
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
-        BufferedImage image = (spriteNum == 1) ? image1 : image2;
-
         int size = 96;
 
-        if(name.equals("Goblin Lord")) {
-            size = 150;
+        if(name.equals("Dragon")) {
+            size = 180;
         }
 
-        g2.drawImage(image, screenX, screenY, size, size, null);
+        if(name.equals("Dragon") && gifImage != null) {
+            g2.drawImage(gifImage, screenX, screenY, size, size, null);
+        } else {
+            BufferedImage image = (spriteNum == 1) ? image1 : image2;
+            g2.drawImage(image, screenX, screenY, size, size, null);
+        }
 
         g2.drawString(name, screenX + 15, screenY - 10);
 
