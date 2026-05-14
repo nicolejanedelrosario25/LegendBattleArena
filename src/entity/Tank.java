@@ -12,6 +12,8 @@ public class Tank extends Character {
 
     public Tank() {
         super("Tank", 160, 10, 15);
+        
+        getCharacterImage("/resources/player/sprites_display/tank_sc.png");
     }
 
     @Override

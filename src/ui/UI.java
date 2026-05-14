@@ -102,23 +102,62 @@ public class UI {
             g2.drawString(heroNames[i], frameX + 60, lineY);
         }
         
-        
         int rightX = gp.tileSize * 8;
         int rightY = gp.tileSize * 3;
         int rightWidth = gp.tileSize * 7;
         int rightHeight = gp.tileSize * 8;
         drawSubWindow(rightX, rightY, rightWidth, rightHeight);
         
-        g2.setFont(pixelFont.deriveFont(42F));
+        g2.setFont(pixelFont.deriveFont(32F));
+        g2.setColor(Color.WHITE);
         g2.drawString("YOUR PARTY (" + gp.party.size() + "/3):", rightX + 30, rightY + gp.tileSize);
         
+                //party list
         for(int i = 0; i < gp.party.size(); i++){
             //draw names of the hero selected
             int partyLineY = rightY + (gp.tileSize * 2) + (i * gp.tileSize);
-            g2.drawString((i + 1) + ". " + gp.party.get(i).getName(), rightX + 30, partyLineY);           
+            
+            if(gp.party.get(i).profileSprite != null){
+                g2.drawImage(gp.party.get(i).profileSprite, rightX + 30, partyLineY - 35, gp.tileSize, gp.tileSize, null);
+            }
+            g2.drawString((i + 1) + ". " + gp.party.get(i).getName(), rightX + 85, partyLineY);           
         }
         
-        drawHeroDetails(rightX, rightY);      
+        //preview image
+        entity.Character previewHero = null;
+        
+        if(commandNum == 0){
+            previewHero = new entity.Warrior();
+        }else if(commandNum == 1){
+            previewHero = new entity.Mage();
+        }else if(commandNum == 2){
+            previewHero = new entity.Tank();
+        }else if(commandNum == 3){
+            previewHero = new entity.Healer();
+        }else if(commandNum == 4){
+            previewHero = new entity.Archer();
+        }
+        
+        if(previewHero != null && previewHero.profileSprite != null){
+            int previewSize = gp.tileSize * 3;
+            int previewX = rightX + (rightWidth/2) - (previewSize/2);
+            int previewY = rightY + (gp.tileSize * 4);
+            g2.drawImage(previewHero.profileSprite, previewX, previewY, previewSize, previewSize, null);
+        }
+        
+        drawHeroDetails(rightX, rightY);  
+        
+        
+
+        
+        
+//        BufferedImage previewImage = null;
+//        
+//        switch(commandNum){
+//            case 0 ->{
+//                
+//            }
+//        }    
         
     }
     

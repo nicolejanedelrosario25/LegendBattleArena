@@ -97,9 +97,9 @@ public class GamePanel extends JPanel implements Runnable {
           }else if (ui.commandNum == 2){
               party.add(new Tank());
           }else if (ui.commandNum == 3){
-              party.add(new Archer());
-          }else if(ui.commandNum == 4){
               party.add(new Healer());
+          }else if(ui.commandNum == 4){
+              party.add(new Archer());
           }
           
           System.out.println("Hero Added! Party size: " + party.size());
@@ -161,7 +161,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     } else if(currentWave == 6) {
 
-        enemy = new Enemy(this, "Goblin",
+        enemy = new Enemy(this, "Dragon",
                 tileSize * 25,
                 tileSize * 13,
                 220,

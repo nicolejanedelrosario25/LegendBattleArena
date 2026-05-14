@@ -12,6 +12,8 @@ public class Mage extends Character {
 
     public Mage() {
         super("Mage", 80, 25, 3);
+        
+        getCharacterImage("/resources/player/sprites_display/mage_sc.png");
     }
 
     @Override

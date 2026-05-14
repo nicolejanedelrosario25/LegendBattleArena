@@ -12,6 +12,8 @@ public class Archer extends Character {
 
     public Archer() {
         super("Archer", 90, 20, 4);
+        
+        getCharacterImage("/resources/player/sprites_display/archer_sc.png");
     }
 
     @Override

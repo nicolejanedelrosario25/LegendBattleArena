@@ -12,6 +12,8 @@ public class Warrior extends Character {
 
     public Warrior() {
         super("Warrior", 120, 18, 8);
+        
+        getCharacterImage("/resources/player/sprites_display/warrior_sc.png");
     }
 
     @Override

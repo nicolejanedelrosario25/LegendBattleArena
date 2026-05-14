@@ -4,6 +4,10 @@
  */
 package entity;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
 /**
  *
  * @author nicol
@@ -14,6 +18,7 @@ public abstract class Character {
     private int maxHp;
     private int attackPower;
     private int defensePower;
+    public BufferedImage profileSprite;
 
     public Character(String name, int maxHp, int attackPower, int defensePower) {
         this.name = name;
@@ -26,7 +31,15 @@ public abstract class Character {
     public String getName() {
         return name;
     }
-
+    
+    public void getCharacterImage(String imagePath){
+        try{
+            profileSprite = ImageIO.read(getClass().getResourceAsStream(imagePath));
+        }catch(IOException | IllegalArgumentException e){
+            System.out.println("Error loading image: " + imagePath);
+            e.printStackTrace();
+        }
+    }
     public int getHp() {
         return hp;
     }

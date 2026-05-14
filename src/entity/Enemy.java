@@ -62,7 +62,10 @@ public class Enemy extends Entity {
                 image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_1.png"));
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_2.png"));
 
-            } else {
+            } else if(name.equals("Dragon")){
+                
+            }
+            else {
 
                 image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime.png"));
                 image2 = image1;

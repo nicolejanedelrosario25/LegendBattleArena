@@ -12,6 +12,8 @@ public class Healer extends Character {
 
     public Healer() {
         super("Healer", 100, 12, 5);
+        
+        getCharacterImage("/resources/player/sprites_display/healer_sc.png");
     }
 
     @Override
