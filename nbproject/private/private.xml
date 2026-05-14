@@ -3,15 +3,20 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/JavaProjects/LegendBattleArena/src/game/CollisionChecker.java</file>
-            <file>file:/C:/JavaProjects/LegendBattleArena/src/main/Main.java</file>
-            <file>file:/C:/JavaProjects/LegendBattleArena/src/game/GamePanel.java</file>
-            <file>file:/C:/JavaProjects/LegendBattleArena/src/ui/UI.java</file>
-            <file>file:/C:/JavaProjects/LegendBattleArena/src/game/KeyHandler.java</file>
-            <file>file:/C:/JavaProjects/LegendBattleArena/src/game/MouseHandler.java</file>
-            <file>file:/C:/JavaProjects/LegendBattleArena/src/entity/Character.java</file>
-            <file>file:/C:/JavaProjects/LegendBattleArena/src/entity/Player.java</file>
-            <file>file:/C:/JavaProjects/LegendBattleArena/src/entity/Enemy.java</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/tile/TileManager.java</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/entity/Player.java</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/tile/Tile.java</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/game/CollisionChecker.java</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/entity/Enemy.java</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/main/Main.java</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/data/SaveLoad.java</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/game/GamePanel.java</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/resources/maps/map.txt</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/resources/maps/testM.txt</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/resources/enemy/slime_2.png</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/resources/enemy/slime_1.png</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/resources/enemy/skeleton_idle_1.png</file>
+            <file>file:/C:/Users/nicol/Documents/LegendBattleArena/src/resources/enemy/goblin_idle_2.png</file>
         </group>
     </open-files>
 </project-private>

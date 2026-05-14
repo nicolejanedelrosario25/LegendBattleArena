@@ -10,7 +10,6 @@ import game.KeyHandler;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 
 
@@ -22,7 +21,6 @@ public class Player extends Entity {
 
     GamePanel gp;
     KeyHandler keyH;
-    
 
     BufferedImage up1, up2;
     BufferedImage down1, down2;
@@ -39,43 +37,44 @@ public class Player extends Entity {
 
         this.gp = gp;
         this.keyH = keyH;
-        
+
         solidArea = new Rectangle(8, 16, 32, 32);
-        
-        screenX = gp.screenWidth/2 - (gp.tileSize/2);
-        screenY = gp.screenHeight/2 - (gp.tileSize/2);
-        
+
+        screenX = gp.screenWidth / 2 - gp.tileSize / 2;
+        screenY = gp.screenHeight / 2 - gp.tileSize / 2;
+
         setDefaultValues();
         getPlayerImage();
     }
 
     public void setDefaultValues() {
 
-        worldX = gp.tileSize * 23;
-        worldY = gp.tileSize * 21;
-        speed = 4;
-        direction = "down";
-    }
+    worldX = gp.tileSize * 24;
+    worldY = gp.tileSize * 12;
 
-   public void getPlayerImage() {
-
-    try {
-        up1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_up_1.png"));
-        up2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_up_2.png"));
-
-        down1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_down_1.png"));
-        down2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_down_2.png"));
-
-        left1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_left_1.png"));
-        left2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_left_2.png"));
-
-        right1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_right_1.png"));
-        right2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_right_2.png"));
-
-    } catch(Exception e) {
-        e.printStackTrace();
-    }
+    speed = 4;
+    direction = "down";
 }
+
+    public void getPlayerImage() {
+
+        try {
+            up1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_up_1.png"));
+            up2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_up_2.png"));
+
+            down1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_down_1.png"));
+            down2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_down_2.png"));
+
+            left1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_left_1.png"));
+            left2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_left_2.png"));
+
+            right1 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_right_1.png"));
+            right2 = ImageIO.read(getClass().getResourceAsStream("/resources/player/sprites_action/warrior_right_2.png"));
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void update() {
 
@@ -109,34 +108,16 @@ public class Player extends Entity {
         }
 
         boolean collision = gp.cChecker.checkTile(this, nextX, nextY);
-  
+
         if(!collision) {
             worldX = nextX;
             worldY = nextY;
         }
 
         if(moving) {
-
             spriteCounter++;
 
             if(spriteCounter > 10) {
-
-                if(spriteNum == 1) {
-                    spriteNum = 2;
-                } else {
-                    spriteNum = 1;
-                }
-
-                spriteCounter = 0;
-            }
-        }
-
-        if(moving) {
-
-            spriteCounter++;
-
-            if(spriteCounter > 10) {
-
                 if(spriteNum == 1) {
                     spriteNum = 2;
                 } else {
@@ -171,11 +152,10 @@ public class Player extends Entity {
                 playerTop < enemyBottom;
 
         if(touchingEnemy) {
-
             gp.battleManager.startBattle(gp.enemy);
 
-            worldX = 100;
-            worldY = 100;
+           worldX = gp.tileSize * 24;
+            worldY = gp.tileSize * 12;
         }
     }
 
@@ -184,36 +164,13 @@ public class Player extends Entity {
         BufferedImage image = down1;
 
         if(direction.equals("up")) {
-
-            if(spriteNum == 1) {
-                image = up1;
-            } else {
-                image = up2;
-            }
-
+            image = (spriteNum == 1) ? up1 : up2;
         } else if(direction.equals("down")) {
-
-            if(spriteNum == 1) {
-                image = down1;
-            } else {
-                image = down2;
-            }
-
+            image = (spriteNum == 1) ? down1 : down2;
         } else if(direction.equals("left")) {
-
-            if(spriteNum == 1) {
-                image = left1;
-            } else {
-                image = left2;
-            }
-
+            image = (spriteNum == 1) ? left1 : left2;
         } else if(direction.equals("right")) {
-
-            if(spriteNum == 1) {
-                image = right1;
-            } else {
-                image = right2;
-            }
+            image = (spriteNum == 1) ? right1 : right2;
         }
 
         g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);

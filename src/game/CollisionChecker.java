@@ -19,16 +19,14 @@ public class CollisionChecker {
     }
 
     public boolean checkTile(Player player, int nextX, int nextY) {
-        
+
         int entityLeftWorldX = nextX + player.solidArea.x;
-        int entityRightWorldX = nextX + player.solidArea.x + player.solidArea.width;
+        int entityRightWorldX = nextX + player.solidArea.x + player.solidArea.width - 1;
         int entityTopWorldY = nextY + player.solidArea.y;
-        int entityBottomWorldY = nextY + player.solidArea.y + player.solidArea.height;
-        
+        int entityBottomWorldY = nextY + player.solidArea.y + player.solidArea.height - 1;
+
         int leftCol = entityLeftWorldX / gp.tileSize;
         int rightCol = entityRightWorldX / gp.tileSize;
-
-
         int topRow = entityTopWorldY / gp.tileSize;
         int bottomRow = entityBottomWorldY / gp.tileSize;
 
@@ -41,7 +39,6 @@ public class CollisionChecker {
         int tile2 = gp.tileM.mapTileNum[rightCol][topRow];
         int tile3 = gp.tileM.mapTileNum[leftCol][bottomRow];
         int tile4 = gp.tileM.mapTileNum[rightCol][bottomRow];
-
 
         return gp.tileM.tile[tile1].collision ||
                gp.tileM.tile[tile2].collision ||
