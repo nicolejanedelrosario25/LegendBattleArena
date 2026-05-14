@@ -27,15 +27,14 @@ public class Enemy extends Entity {
 
     int spriteCounter = 0;
     int spriteNum = 1;
+    int actionLockCounter = 0;
 
     public Enemy(GamePanel gp, String name, int worldX, int worldY, int hp, int attackPower) {
 
         this.gp = gp;
-
         this.name = name;
         this.worldX = worldX;
         this.worldY = worldY;
-
         this.hp = hp;
         this.maxHp = hp;
         this.attackPower = attackPower;
@@ -46,25 +45,20 @@ public class Enemy extends Entity {
     public void getEnemyImage() {
 
         try {
-
             if(name.equals("Slime")) {
-
                 image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_1.png"));
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_2.png"));
 
-            } else if(name.equals("Goblin")) {
-
+            } else if(name.equals("Goblin") || name.equals("Goblin Lord")) {
                 image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/gobline_idle_1.png"));
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/goblin_idle_2.png"));
 
             } else if(name.equals("Skeleton")) {
-
                 image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_1.png"));
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_2.png"));
 
             } else {
-
-                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime.png"));
+                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_1.png"));
                 image2 = image1;
             }
 
@@ -79,14 +73,39 @@ public class Enemy extends Entity {
         spriteCounter++;
 
         if(spriteCounter > 20) {
+            spriteNum = (spriteNum == 1) ? 2 : 1;
+            spriteCounter = 0;
+        }
 
-            if(spriteNum == 1) {
-                spriteNum = 2;
-            } else {
-                spriteNum = 1;
+        actionLockCounter++;
+
+        if(actionLockCounter > 25) {
+
+            int random = (int)(Math.random() * 4);
+
+            int nextX = worldX;
+            int nextY = worldY;
+
+            if(random == 0) {
+                nextY -= 8;
+            } else if(random == 1) {
+                nextY += 8;
+            } else if(random == 2) {
+                nextX -= 8;
+            } else if(random == 3) {
+                nextX += 8;
             }
 
-            spriteCounter = 0;
+            if(nextX > 48 &&
+               nextY > 48 &&
+               nextX < gp.worldWidth - 96 &&
+               nextY < gp.worldHeight - 96) {
+
+                worldX = nextX;
+                worldY = nextY;
+            }
+
+            actionLockCounter = 0;
         }
     }
 
@@ -95,20 +114,18 @@ public class Enemy extends Entity {
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
-        BufferedImage image;
+        BufferedImage image = (spriteNum == 1) ? image1 : image2;
 
-        if(spriteNum == 1) {
-            image = image1;
-        } else {
-            image = image2;
+        int size = 96;
+
+        if(name.equals("Goblin Lord")) {
+            size = 150;
         }
 
-        g2.drawImage(image, screenX, screenY, 96, 96, null);
+        g2.drawImage(image, screenX, screenY, size, size, null);
 
-        // ENEMY NAME
         g2.drawString(name, screenX + 15, screenY - 10);
 
-        // HP BAR
-        g2.fillRect(screenX, screenY - 20, hp * 96 / maxHp, 10);
+        g2.fillRect(screenX, screenY - 20, hp * size / maxHp, 10);
     }
 }

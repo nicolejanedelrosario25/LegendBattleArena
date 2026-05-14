@@ -24,162 +24,219 @@ public class BattleManager {
         this.gp = gp;
     }
 
-    public void startBattle(Enemy enemy) {
+  public void startBattle(Enemy enemy) {
 
-        gp.message = "Battle started against " + enemy.name + "!";
+    gp.message = "Battle started against " + enemy.name + "!";
 
-        while(enemy.hp > 0) {
+    while(enemy.hp > 0) {
 
-            for(Character hero : gp.party) {
+        for(Character hero : gp.party) {
 
-                if(enemy.hp <= 0) break;
-                if(!hero.isAlive()) continue;
+            if(enemy.hp <= 0) break;
 
-                gp.turnsTaken++;
+            if(!hero.isAlive()) continue;
 
-                String[] options = {
-                    "Attack",
-                    "Skill",
-                    "Item",
-                    "Flee"
-                };
+            gp.turnsTaken++;
 
-                int choice = JOptionPane.showOptionDialog(
-                        null,
-                        hero.getName() +
-                        "\nHP: " + hero.getHp() + "/" + hero.getMaxHp() +
-                        "\n\nEnemy: " + enemy.name +
-                        "\nEnemy HP: " + enemy.hp +
-                        "\n\nLast Action: " + gp.message +
-                        "\n\nChoose your action:",
-                        "Battle",
-                        JOptionPane.DEFAULT_OPTION,
-                        JOptionPane.INFORMATION_MESSAGE,
-                        null,
-                        options,
-                        options[0]
-                );
+            String[] options = {
+                "Attack",
+                "Skill",
+                "Item",
+                "Flee"
+            };
 
-                if(choice == 0) {
+            int choice = JOptionPane.showOptionDialog(
+                    null,
+                    hero.getName() +
+                    "\nHP: " + hero.getHp() + "/" + hero.getMaxHp() +
+                    "\n\nEnemy: " + enemy.name +
+                    "\nEnemy HP: " + enemy.hp +
+                    "\n\nLast Action: " + gp.message +
+                    "\n\nChoose your action:",
+                    "Battle",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
 
-                    basicAttack(hero, enemy);
-                }
+            // ATTACK
+            if(choice == 0) {
 
-                else if(choice == 1) {
+                basicAttack(hero, enemy);
+            }
 
-                    int damage = hero.useSkill();
+            // SKILL
+            else if(choice == 1) {
 
-                    enemy.hp -= damage;
+                int damage = hero.useSkill();
 
-                    if(enemy.hp < 0) {
-                        enemy.hp = 0;
-                    }
+                enemy.hp -= damage;
 
-                    gp.message = hero.getName() +
-                            " used a skill and dealt " +
-                            damage + " damage!";
-                }
-
-                else if(choice == 2) {
-
-                    try {
-                        useItem(hero);
-                    } catch (EmptyInventoryException e) {
-                        gp.message = e.getMessage();
-                    }
-                }
-
-                else if(choice == 3) {
-
-                    gp.message = "You fled from battle.";
-
-                    gp.player.worldX = 100;
-                    gp.player.worldY = 100;
-
-                    return;
-                }
-
-                else {
-                    gp.message = "Invalid action.";
-                }
-
-                if(enemy.hp <= 0) {
-
+                if(enemy.hp < 0) {
                     enemy.hp = 0;
+                }
 
-                    gp.enemiesDefeated++;
+                gp.message = hero.getName() +
+                        " used a skill and dealt " +
+                        damage + " damage!";
+            }
 
-                    int reward = gp.currentWave * 25;
-                    gp.gold += reward;
+            // ITEM
+            else if(choice == 2) {
 
-                    gp.message = enemy.name +
-                            " defeated! You earned " +
-                            reward + " gold.";
-
-                    gp.currentWave++;
-
-                    if(gp.currentWave > 6) {
-
-                        JOptionPane.showMessageDialog(
-                                null,
-                                "VICTORY!\n\n" +
-                                "Enemies Defeated: " + gp.enemiesDefeated +
-                                "\nTurns Taken: " + gp.turnsTaken +
-                                "\nGold Remaining: " + gp.gold
-                        );
-
-                        gp.message = "Victory! All waves cleared.";
-
-                        gp.player.worldX = 100;
-                        gp.player.worldY = 100;
-
-                    } else {
-
-                        int shopChoice = JOptionPane.showConfirmDialog(
-                                null,
-                                "Wave cleared!\nGold: " + gp.gold +
-                                "\nDo you want to open the shop?",
-                                "Shop",
-                                JOptionPane.YES_NO_OPTION
-                        );
-
-                        if(shopChoice == JOptionPane.YES_OPTION) {
-                            gp.openShop();
-                        }
-
-                        gp.player.worldX = 100;
-                        gp.player.worldY = 100;
-
-                        gp.startNextWave();
-                    }
-
-                    return;
+                try {
+                    useItem(hero);
+                } catch (EmptyInventoryException e) {
+                    gp.message = e.getMessage();
                 }
             }
 
-            if(enemy.hp > 0) {
-                enemyTurn(enemy);
+            // FLEE
+            else if(choice == 3) {
+
+                gp.message = "You fled from battle.";
+
+                gp.player.worldX = gp.tileSize * 12;
+                gp.player.worldY = gp.tileSize * 10;
+
+                return;
             }
 
-            if(allHeroesDead()) {
+            else {
+                gp.message = "Invalid action.";
+            }
+
+            // ENEMY DEFEATED
+            if(enemy.hp <= 0) {
+
+                enemy.hp = 0;
+
+                gp.enemiesDefeated++;
+
+                int reward = gp.currentWave * 25;
+
+                gp.gold += reward;
+
+                gp.message = enemy.name +
+                        " defeated! You earned " +
+                        reward + " gold.";
 
                 JOptionPane.showMessageDialog(
                         null,
-                        "DEFEAT!\n\n" +
-                        "Enemies Defeated: " + gp.enemiesDefeated +
-                        "\nTurns Taken: " + gp.turnsTaken +
-                        "\nGold Remaining: " + gp.gold
+                        enemy.name + " defeated!\n\n" +
+                        "+" + reward + " Gold earned!"
                 );
 
-                gp.message = "Defeat. All heroes were defeated.";
+                // FINAL WAVE
+                if(gp.currentWave == 6) {
 
-                gp.player.worldX = 100;
-                gp.player.worldY = 100;
+                    gp.enemy = null;
+
+                    gp.message = "Victory! All waves cleared.";
+
+                    String[] endOptions = {
+                        "Start Over",
+                        "Exit Game"
+                    };
+
+                    int endChoice = JOptionPane.showOptionDialog(
+                            null,
+                            "CONGRATULATIONS!\n\n" +
+                            "You defeated the Goblin Lord!\n\n" +
+                            "Enemies Defeated: " + gp.enemiesDefeated +
+                            "\nTurns Taken: " + gp.turnsTaken +
+                            "\nGold Remaining: " + gp.gold +
+                            "\n\nWhat do you want to do?",
+                            "VICTORY",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.INFORMATION_MESSAGE,
+                            null,
+                            endOptions,
+                            endOptions[0]
+                    );
+
+                    // START OVER
+                    if(endChoice == 0) {
+
+                        gp.currentWave = 1;
+                        gp.gold = 0;
+                        gp.enemiesDefeated = 0;
+                        gp.turnsTaken = 0;
+
+                        gp.party.clear();
+                        gp.inventory.clear();
+
+                        gp.player.worldX = gp.tileSize * 12;
+                        gp.player.worldY = gp.tileSize * 10;
+
+                        gp.ui.commandNum = 0;
+
+                        gp.gameState = gp.characterState;
+
+                        gp.message = "New game started. Choose your heroes.";
+                    }
+
+                    // EXIT GAME
+                    else {
+                        System.exit(0);
+                    }
+
+                    return;
+                }
+
+                // NEXT WAVE
+                gp.currentWave++;
+
+                int shopChoice = JOptionPane.showConfirmDialog(
+                        null,
+                        "Wave cleared!\nGold: " + gp.gold +
+                        "\nDo you want to open the shop?",
+                        "Shop",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if(shopChoice == JOptionPane.YES_OPTION) {
+                    gp.openShop();
+                }
+
+                gp.player.worldX = gp.tileSize * 12;
+                gp.player.worldY = gp.tileSize * 10;
+
+                gp.startNextWave();
 
                 return;
             }
         }
+
+        // ENEMY TURN
+        if(enemy.hp > 0) {
+            enemyTurn(enemy);
+        }
+
+        // ALL HEROES DEAD
+        if(allHeroesDead()) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "DEFEAT!\n\n" +
+                    "Enemies Defeated: " + gp.enemiesDefeated +
+                    "\nTurns Taken: " + gp.turnsTaken +
+                    "\nGold Remaining: " + gp.gold
+            );
+
+            gp.enemy = null;
+
+            gp.message = "Defeat. All heroes were defeated.";
+
+            gp.player.worldX = gp.tileSize * 12;
+            gp.player.worldY = gp.tileSize * 10;
+
+            return;
+        }
     }
+}
 
     public void basicAttack(Character hero, Enemy enemy) {
 
