@@ -147,17 +147,7 @@ public class UI {
         
         drawHeroDetails(rightX, rightY);  
         
-        
 
-        
-        
-//        BufferedImage previewImage = null;
-//        
-//        switch(commandNum){
-//            case 0 ->{
-//                
-//            }
-//        }    
         
     }
     

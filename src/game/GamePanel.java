@@ -89,52 +89,35 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void chooseHeroes() {
 
-      if(party.size() < 3){
-          if(ui.commandNum == 0){
-              party.add(new Warrior());
-          }else if(ui.commandNum == 1){
-              party.add(new Mage());
-          }else if (ui.commandNum == 2){
-              party.add(new Tank());
-          }else if (ui.commandNum == 3){
-              party.add(new Healer());
-          }else if(ui.commandNum == 4){
-              party.add(new Archer());
-          }
-          
-          System.out.println("Hero Added! Party size: " + party.size());
-      }
+        if(party.size() >= 3) {
+            return;
+        }
 
-    if(party.size() >= 3) {
-        return;
+        switch(ui.commandNum) {
 
+            case 0:
+                party.add(new Warrior());
+                break;
+
+            case 1:
+                party.add(new Mage());
+                break;
+
+            case 2:
+                party.add(new Tank());
+                break;
+
+            case 3:
+                party.add(new Healer());
+                break;
+
+            case 4:
+                party.add(new Archer());
+                break;
+        }
+
+        System.out.println("Hero Added! Party size: " + party.size());
     }
-
-    switch(ui.commandNum) {
-
-        case 0:
-            party.add(new Warrior());
-            break;
-
-        case 1:
-            party.add(new Mage());
-            break;
-
-        case 2:
-            party.add(new Tank());
-            break;
-
-        case 3:
-            party.add(new Healer());
-            break;
-
-        case 4:
-            party.add(new Archer());
-            break;
-    }
-
-    System.out.println("Hero Added! Party size: " + party.size());
-}
 
     public void setupItems() {
 

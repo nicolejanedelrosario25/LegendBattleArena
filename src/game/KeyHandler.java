@@ -20,6 +20,7 @@ public class KeyHandler implements KeyListener {
     public boolean downPressed;
     public boolean leftPressed;
     public boolean rightPressed;
+    public boolean enterPressed;
 
     public KeyHandler(GamePanel gp) {
         this.gp = gp;
@@ -49,6 +50,7 @@ public class KeyHandler implements KeyListener {
 
                 if(gp.ui.commandNum == 0) {
                     gp.ui.commandNum = 0;
+                    enterPressed = true;
                     gp.gameState = gp.characterState;
                 }
 
@@ -78,12 +80,16 @@ public class KeyHandler implements KeyListener {
             }
 
             if(code == KeyEvent.VK_ENTER) {
-                gp.chooseHeroes();
-
-                if(gp.party.size() == 3) {
-                    gp.setupItems();
-                    gp.gameState = gp.playState;
-                }
+                
+                if(enterPressed == false){
+                    gp.chooseHeroes();
+                    enterPressed = true;
+                    
+                    if(gp.party.size() == 3) {
+                        gp.setupItems();
+                        gp.gameState = gp.playState;
+                    }
+                }   
             }
         }
 
@@ -188,6 +194,10 @@ public class KeyHandler implements KeyListener {
 
         if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT) {
             rightPressed = false;
+        }
+        
+        if(code == KeyEvent.VK_ENTER){
+            enterPressed = false;
         }
     }
 }
