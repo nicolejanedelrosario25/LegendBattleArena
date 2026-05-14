@@ -89,45 +89,45 @@ public class GamePanel extends JPanel implements Runnable {
         this.addMouseMotionListener(mouseH);
     }
 
-    public void chooseHeroes() {
+   public void chooseHeroes() {
 
-        long currentTime = System.currentTimeMillis();
+    long currentTime = System.currentTimeMillis();
 
-        if(currentTime - lastHeroPickTime < 300) {
-            return;
-        }
-
-        lastHeroPickTime = currentTime;
-
-        if(party.size() >= 3) {
-            return;
-        }
-
-        switch(ui.commandNum) {
-
-            case 0:
-                party.add(new Warrior());
-                break;
-
-            case 1:
-                party.add(new Mage());
-                break;
-
-            case 2:
-                party.add(new Tank());
-                break;
-
-            case 3:
-                party.add(new Healer());
-                break;
-
-            case 4:
-                party.add(new Archer());
-                break;
-        }
-
-        System.out.println("Hero Added! Party size: " + party.size());
+    if(currentTime - lastHeroPickTime < 300) {
+        return;
     }
+
+    lastHeroPickTime = currentTime;
+
+    if(party.size() >= 3) {
+        return;
+    }
+
+    switch(ui.commandNum) {
+
+        case 0:
+            party.add(new Warrior());
+            break;
+
+        case 1:
+            party.add(new Mage());
+            break;
+
+        case 2:
+            party.add(new Tank());
+            break;
+
+        case 3:
+            party.add(new Healer());
+            break;
+
+        case 4:
+            party.add(new Archer());
+            break;
+    }
+
+    System.out.println("Hero Added! Party size: " + party.size());
+}
 
     public void setupItems() {
 
