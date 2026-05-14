@@ -104,7 +104,37 @@ public class GamePanel extends JPanel implements Runnable {
           
           System.out.println("Hero Added! Party size: " + party.size());
       }
+
+    if(party.size() >= 3) {
+        return;
+
     }
+
+    switch(ui.commandNum) {
+
+        case 0:
+            party.add(new Warrior());
+            break;
+
+        case 1:
+            party.add(new Mage());
+            break;
+
+        case 2:
+            party.add(new Tank());
+            break;
+
+        case 3:
+            party.add(new Healer());
+            break;
+
+        case 4:
+            party.add(new Archer());
+            break;
+    }
+
+    System.out.println("Hero Added! Party size: " + party.size());
+}
 
     public void setupItems() {
 
@@ -117,66 +147,99 @@ public class GamePanel extends JPanel implements Runnable {
         startNextWave();
     }
 
-   public void startNextWave() {
+  public void startNextWave() {
 
     if(currentWave == 1) {
 
-        enemy = new Enemy(this, "Slime",
+        enemy = new Enemy(
+                this,
+                "Slime",
                 tileSize * 28,
                 tileSize * 12,
                 50,
-                10);
+                10
+        );
 
     } else if(currentWave == 2) {
 
-        enemy = new Enemy(this, "Goblin",
+        enemy = new Enemy(
+                this,
+                "Goblin",
                 tileSize * 24,
                 tileSize * 10,
                 70,
-                15);
+                15
+        );
 
     } else if(currentWave == 3) {
 
-        enemy = new Enemy(this, "Skeleton",
+        enemy = new Enemy(
+                this,
+                "Skeleton",
                 tileSize * 35,
                 tileSize * 18,
                 90,
-                18);
+                18
+        );
 
     } else if(currentWave == 4) {
 
-        enemy = new Enemy(this, "Goblin",
+        enemy = new Enemy(
+                this,
+                "Goblin",
                 tileSize * 20,
                 tileSize * 25,
                 120,
-                22);
+                22
+        );
 
     } else if(currentWave == 5) {
 
-        enemy = new Enemy(this, "Skeleton",
+        enemy = new Enemy(
+                this,
+                "Skeleton",
                 tileSize * 40,
                 tileSize * 30,
                 150,
-                28);
+                28
+        );
 
     } else if(currentWave == 6) {
 
-        enemy = new Enemy(this, "Dragon",
+        JOptionPane.showMessageDialog(
+                null,
+                "Be careful!\n\nThe Goblin Lord has appeared!\nThis is the final wave!",
+                "Final Wave",
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        enemy = new Enemy(
+                this,
+                "Goblin Lord",
                 tileSize * 25,
                 tileSize * 13,
                 220,
-                35);
+                35
+        );
 
     } else {
 
         enemy = null;
-        message = "Victory! All waves cleared!";
+
+        JOptionPane.showMessageDialog(
+                null,
+                "CONGRATULATIONS!\n\n" +
+                "You defeated all enemy waves!\n\n" +
+                "Enemies Defeated: " + enemiesDefeated +
+                "\nTurns Taken: " + turnsTaken +
+                "\nGold Earned: " + gold
+        );
+
         return;
     }
 
-    message = "Wave " + currentWave + " started! Find the enemy!";
+    message = "Wave " + currentWave + " started!";
 }
-   
    
     public void openShop() {
 
@@ -268,7 +331,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if(enemy != null) {
             enemy.update();
-}
+        }
     }
 
     @Override
