@@ -223,58 +223,109 @@ public class BattleManager {
 
     public void useItem(Character hero) throws EmptyInventoryException {
 
-        if(gp.inventory.isEmpty()) {
-            throw new EmptyInventoryException("Inventory is empty.");
+    if(gp.inventory.isEmpty()) {
+        throw new EmptyInventoryException("Inventory is empty.");
+    }
+
+    int potionCount = 0;
+    int manaCount = 0;
+    int reviveCount = 0;
+
+    for(Item item : gp.inventory) {
+
+        if(item.getName().equals("Health Potion")) {
+            potionCount++;
         }
 
-        String[] itemNames = new String[gp.inventory.size()];
+        else if(item.getName().equals("Mana Elixir")) {
+            manaCount++;
+        }
+
+        else if(item.getName().equals("Revive Scroll")) {
+            reviveCount++;
+        }
+    }
+
+    java.util.ArrayList<String> choicesList = new java.util.ArrayList<>();
+
+    if(potionCount > 0) {
+        choicesList.add("Health Potion x" + potionCount);
+    }
+
+    if(manaCount > 0) {
+        choicesList.add("Mana Elixir x" + manaCount);
+    }
+
+    if(reviveCount > 0) {
+        choicesList.add("Revive Scroll x" + reviveCount);
+    }
+
+    String[] choices = choicesList.toArray(new String[0]);
+
+    int choice = JOptionPane.showOptionDialog(
+            null,
+            "Choose Item",
+            "Inventory",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.INFORMATION_MESSAGE,
+            null,
+            choices,
+            choices[0]
+    );
+
+    if(choice < 0) {
+        gp.message = "Item cancelled.";
+        return;
+    }
+
+    String selected = choices[choice];
+
+    if(selected.contains("Health Potion")) {
+
+        hero.setHp(hero.getHp() + 30);
+
+        gp.message = hero.getName() +
+                " used Health Potion and restored 30 HP.";
 
         for(int i = 0; i < gp.inventory.size(); i++) {
-            itemNames[i] = gp.inventory.get(i).getName();
+
+            if(gp.inventory.get(i).getName().equals("Health Potion")) {
+                gp.inventory.remove(i);
+                break;
+            }
         }
-
-        int choice = JOptionPane.showOptionDialog(
-                null,
-                "Choose Item",
-                "Inventory",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                null,
-                itemNames,
-                itemNames[0]
-        );
-
-        if(choice < 0) {
-            gp.message = "Item cancelled.";
-            return;
-        }
-
-        Item item = gp.inventory.get(choice);
-
-        if(item.getEffect().equals("heal")) {
-
-            hero.setHp(hero.getHp() + 30);
-
-            gp.message = hero.getName() +
-                    " used Health Potion and restored 30 HP.";
-        }
-
-        else if(item.getEffect().equals("revive")) {
-
-            hero.setHp(40);
-
-            gp.message = hero.getName() +
-                    " used Revive Scroll and revived with 40 HP.";
-        }
-
-        else if(item.getEffect().equals("boost")) {
-
-            gp.message = hero.getName() +
-                    " used Mana Elixir.";
-        }
-
-        gp.inventory.remove(choice);
     }
+
+    else if(selected.contains("Mana Elixir")) {
+
+        gp.message = hero.getName() +
+                " used Mana Elixir.";
+
+        for(int i = 0; i < gp.inventory.size(); i++) {
+
+            if(gp.inventory.get(i).getName().equals("Mana Elixir")) {
+                gp.inventory.remove(i);
+                break;
+            }
+        }
+    }
+
+    else if(selected.contains("Revive Scroll")) {
+
+        hero.setHp(40);
+
+        gp.message = hero.getName() +
+                " used Revive Scroll and revived with 40 HP.";
+
+        for(int i = 0; i < gp.inventory.size(); i++) {
+
+            if(gp.inventory.get(i).getName().equals("Revive Scroll")) {
+                gp.inventory.remove(i);
+                break;
+            }
+        }
+    }
+}
 
     public void enemyTurn(Enemy enemy) {
 

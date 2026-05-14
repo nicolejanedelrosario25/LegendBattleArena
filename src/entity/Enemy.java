@@ -5,10 +5,9 @@
 package entity;
 
 import game.GamePanel;
-import java.awt.Color;
+
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
@@ -16,78 +15,100 @@ import javax.imageio.ImageIO;
  * @author nicol
  */
 public class Enemy extends Entity {
-    
+
+    GamePanel gp;
+
     public String name;
     public int hp;
     public int maxHp;
     public int attackPower;
 
-    BufferedImage image;
-    GamePanel gp;
-    
-    public Enemy(GamePanel gp, String name, int x, int y, int hp, int attackPower) {
+    BufferedImage image1, image2;
+
+    int spriteCounter = 0;
+    int spriteNum = 1;
+
+    public Enemy(GamePanel gp, String name, int worldX, int worldY, int hp, int attackPower) {
+
         this.gp = gp;
+
         this.name = name;
-        this.worldX = x;
-        this.worldY = y;
+        this.worldX = worldX;
+        this.worldY = worldY;
+
         this.hp = hp;
         this.maxHp = hp;
         this.attackPower = attackPower;
-        this.speed = 0;
-        this.direction = "down";
 
         getEnemyImage();
     }
 
     public void getEnemyImage() {
 
-    String imagePath = "/resources/enemy/slime.png";
+        try {
 
-    if(name.equals("Slime")) {
-        imagePath = "/resources/enemy/slime_1.png";
+            if(name.equals("Slime")) {
 
-    } else if(name.equals("Goblin")) {
-        imagePath = "/resources/enemy/gobline_idle_1.png";
+                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_1.png"));
+                image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_2.png"));
 
-    } else if(name.equals("Skeleton")) {
-        imagePath = "/resources/enemy/skeleton_idle_1.png";
+            } else if(name.equals("Goblin")) {
+
+                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/gobline_idle_1.png"));
+                image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/goblin_idle_2.png"));
+
+            } else if(name.equals("Skeleton")) {
+
+                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_1.png"));
+                image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_2.png"));
+
+            } else {
+
+                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime.png"));
+                image2 = image1;
+            }
+
+        } catch(Exception e) {
+            System.out.println("Enemy image not found for: " + name);
+            e.printStackTrace();
+        }
     }
 
-    try {
+    public void update() {
 
-        image = ImageIO.read(
-                getClass().getResourceAsStream(imagePath));
+        spriteCounter++;
 
-    } catch(IOException e) {
-        e.printStackTrace();
+        if(spriteCounter > 20) {
+
+            if(spriteNum == 1) {
+                spriteNum = 2;
+            } else {
+                spriteNum = 1;
+            }
+
+            spriteCounter = 0;
+        }
     }
-}
 
     public void draw(Graphics2D g2) {
+
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
-        
-        if(image != null) {
-            g2.drawImage(image, screenX, screenY, 48, 48, null);
+
+        BufferedImage image;
+
+        if(spriteNum == 1) {
+            image = image1;
         } else {
-            g2.setColor(Color.red);
-            g2.fillOval(screenX, screenY, 40, 40);
+            image = image2;
         }
 
-        g2.setColor(Color.white);
-        g2.drawString(name, screenX - 5, screenY - 15);
+        g2.drawImage(image, screenX, screenY, 96, 96, null);
 
-        g2.setColor(Color.black);
-        g2.fillRect(screenX, screenY - 10, 48, 6);
+        // ENEMY NAME
+        g2.drawString(name, screenX + 15, screenY - 10);
 
-        g2.setColor(Color.red);
-
-        int hpBarWidth = hp * 48 / maxHp;
-
-        if(hpBarWidth < 0) {
-            hpBarWidth = 0;
-        }
-
-        g2.fillRect(screenX, screenY - 10, hpBarWidth, 6);
+        // HP BAR
+        g2.fillRect(screenX, screenY - 20, hp * 96 / maxHp, 10);
     }
 }

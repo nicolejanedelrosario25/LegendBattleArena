@@ -121,88 +121,62 @@ public class GamePanel extends JPanel implements Runnable {
 
     if(currentWave == 1) {
 
-        enemy = new Enemy(
-                this,
-                "Slime",
-                500,
-                300,
+        enemy = new Enemy(this, "Slime",
+                tileSize * 28,
+                tileSize * 12,
                 50,
-                10
-        );
+                10);
 
     } else if(currentWave == 2) {
 
-        enemy = new Enemy(
-                this,
-                "Goblin",
-                500,
-                300,
+        enemy = new Enemy(this, "Goblin",
+                tileSize * 24,
+                tileSize * 10,
                 70,
-                15
-        );
+                15);
 
     } else if(currentWave == 3) {
 
-        enemy = new Enemy(
-                this,
-                "Skeleton",
-                500,
-                300,
+        enemy = new Enemy(this, "Skeleton",
+                tileSize * 35,
+                tileSize * 18,
                 90,
-                18
-        );
+                18);
 
     } else if(currentWave == 4) {
 
-        enemy = new Enemy(
-                this,
-                "Goblin",
-                500,
-                300,
+        enemy = new Enemy(this, "Goblin",
+                tileSize * 20,
+                tileSize * 25,
                 120,
-                22
-        );
+                22);
 
     } else if(currentWave == 5) {
 
-        enemy = new Enemy(
-                this,
-                "Skeleton",
-                500,
-                300,
+        enemy = new Enemy(this, "Skeleton",
+                tileSize * 40,
+                tileSize * 30,
                 150,
-                28
-        );
+                28);
 
     } else if(currentWave == 6) {
 
-        enemy = new Enemy(
-                this,
-                "Goblin",
-                500,
-                300,
+        enemy = new Enemy(this, "Goblin",
+                tileSize * 25,
+                tileSize * 13,
                 220,
-                35
-        );
+                35);
 
     } else {
 
         enemy = null;
-
-        JOptionPane.showMessageDialog(
-                null,
-                "CONGRATULATIONS!\n\n" +
-                "You defeated all enemy waves!\n\n" +
-                "Enemies Defeated: " + enemiesDefeated +
-                "\nTurns Taken: " + turnsTaken +
-                "\nGold Earned: " + gold
-        );
-
+        message = "Victory! All waves cleared!";
         return;
     }
 
-    message = "Wave " + currentWave + " started!";
+    message = "Wave " + currentWave + " started! Find the enemy!";
 }
+   
    
     public void openShop() {
 
@@ -292,6 +266,9 @@ public class GamePanel extends JPanel implements Runnable {
         if(gameState == playState) {
             player.update();
         }
+        if(enemy != null) {
+            enemy.update();
+}
     }
 
     @Override
