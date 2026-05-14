@@ -32,54 +32,91 @@ public class KeyHandler implements KeyListener {
 
         int code = e.getKeyCode();
 
-        // ENTER KEY
-        if(code == KeyEvent.VK_ENTER) {
+        //TITLE STATE LOGIC
+        if(gp.gameState == gp.titleState){
+            if(code == KeyEvent.VK_W || code == KeyEvent.VK_UP){
+                gp.ui.commandNum--;
+                if(gp.ui.commandNum < 0){
+                    gp.ui.commandNum = 1;
+                }
+            }
+            if(code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN){
+              gp.ui.commandNum++;
+              if(gp.ui.commandNum > 1){
+                  gp.ui.commandNum = 0;
+              }
+            }
+            if(code == KeyEvent.VK_ENTER){
+                if(gp.ui.commandNum == 0){
 
-            if(gp.gameState == gp.titleState) {
-                
+                    gp.gameState = gp.characterState;
+                    gp.ui.commandNum = 0;
+                    gp.requestFocusInWindow();
+                }
+                if(gp.ui.commandNum == 1){
+                    System.exit(0);
+                }
+            }
+            
+        }
+        
+        //character selection logic
+        else if(gp.gameState == gp.characterState) {
+            if(code == KeyEvent.VK_W || code == KeyEvent.VK_UP){
+                gp.ui.commandNum--;
+                if(gp.ui.commandNum < 0){
+                    gp.ui.commandNum = 4;
+                }
+            }
+            else if(code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN){
+                gp.ui.commandNum++;
+                if(gp.ui.commandNum > 4){
+                    gp.ui.commandNum = 0;
+                }
+            }
+            if(code == KeyEvent.VK_ENTER){
                 
                 gp.chooseHeroes();
-                gp.setupItems();
                 
-                gp.gameState = gp.playState;
-                
-                
-                gp.requestFocusInWindow();
+                if(gp.party.size() == 3){
+                    gp.setupItems();              
+                    gp.gameState = gp.playState; 
+                    gp.requestFocusInWindow();
+                }
             }
         }
-
+        
+        //play state logic
+        else if(gp.gameState == gp.playState){
+            
         // SAVE GAME
-        if(code == KeyEvent.VK_P) {
+            if(code == KeyEvent.VK_P) {
+                gp.saveLoad.saveGame();
+            }
 
-            gp.saveLoad.saveGame();
+            // LOAD GAME
+            if(code == KeyEvent.VK_L) {
+                gp.saveLoad.loadGame();
+            }
+
+            // MOVEMENT KEYS
+            if(code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
+                upPressed = true;
+            }
+
+            if(code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN) {
+                downPressed = true;
+            }
+
+            if(code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT) {
+                leftPressed = true;
+            }
+
+            if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT) {
+                rightPressed = true;
+            }
         }
-
-        // LOAD GAME
-        if(code == KeyEvent.VK_L) {
-
-            gp.saveLoad.loadGame();
-        }
-
-        // MOVEMENT KEYS
-        if(code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
-
-            upPressed = true;
-        }
-
-        if(code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN) {
-
-            downPressed = true;
-        }
-
-        if(code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT) {
-
-            leftPressed = true;
-        }
-
-        if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT) {
-
-            rightPressed = true;
-        }
+        
     }
 
     @Override
@@ -99,6 +136,7 @@ public class KeyHandler implements KeyListener {
 
         if(code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT) {
 
+            
             leftPressed = false;
         }
 

@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import ui.UI;
 /**
  *
  * @author nicol
@@ -66,6 +67,9 @@ public class GamePanel extends JPanel implements Runnable {
     public int gameState;
     public final int titleState = 0;
     public final int playState = 1;
+    
+    public UI ui = new UI(this);
+    public int characterState = 2;
 
     public GamePanel() {
 
@@ -77,55 +81,29 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
 
         gameState = titleState;
+        
+        MouseHandler mouseH = new MouseHandler(this);
+        this.addMouseListener(mouseH);
+        this.addMouseMotionListener(mouseH);
     }
 
     public void chooseHeroes() {
 
-        party.clear();
-
-        while(party.size() < 3) {
-
-            String[] choices = {
-                "Warrior",
-                "Mage",
-                "Tank",
-                "Archer",
-                "Healer"
-            };
-
-            int choice = JOptionPane.showOptionDialog(
-                    null,
-                    "Choose hero " + (party.size() + 1) + " of 3:",
-                    "Hero Selection",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    choices,
-                    choices[0]
-            );
-
-            if(choice == 0) {
-                party.add(new Warrior());
-            } else if(choice == 1) {
-                party.add(new Mage());
-            } else if(choice == 2) {
-                party.add(new Tank());
-            } else if(choice == 3) {
-                party.add(new Archer());
-            } else if(choice == 4) {
-                party.add(new Healer());
-            } else {
-                JOptionPane.showMessageDialog(null, "Please choose a hero.");
-            }
-        }
-
-        JOptionPane.showMessageDialog(
-                null,
-                "Your party is ready:\n" +
-                party.get(0).getName() + "\n" +
-                party.get(1).getName() + "\n" +
-                party.get(2).getName()
-        );
+      if(party.size() < 3){
+          if(ui.commandNum == 0){
+              party.add(new Warrior());
+          }else if(ui.commandNum == 1){
+              party.add(new Mage());
+          }else if (ui.commandNum == 2){
+              party.add(new Tank());
+          }else if (ui.commandNum == 3){
+              party.add(new Archer());
+          }else if(ui.commandNum == 4){
+              party.add(new Healer());
+          }
+          
+          System.out.println("Hero Added! Party size: " + party.size());
+      }
     }
 
     public void setupItems() {
@@ -316,20 +294,20 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    @Override
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D)g;
 
         if(gameState == titleState) {
-
-            g2.setColor(Color.white);
-            g2.drawString("LEGEND BATTLE ARENA", 300, 250);
-            g2.drawString("Press ENTER to Start", 320, 300);
+            ui.draw(g2);
         }
-
-        if(gameState == playState) {
+        
+        else if(gameState == characterState){
+            ui.draw(g2);
+        }  
+        else if(gameState == playState) {
 
             tileM.draw(g2);
 
@@ -344,8 +322,8 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString("Gold: " + gold, 20, 40);
             g2.drawString("Items: " + inventory.size(), 20, 60);
             g2.drawString(message, 20, 85);
-        }
-
+        }      
+             
         g2.dispose();
     }
 }
