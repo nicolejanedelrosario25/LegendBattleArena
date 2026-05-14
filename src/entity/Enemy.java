@@ -41,28 +41,27 @@ public class Enemy extends Entity {
 
     public void getEnemyImage() {
 
-        String imagePath = "/resources/enemy/slime.png";
+    String imagePath = "/resources/enemy/slime.png";
 
-        if(name.equals("Slime")) {
-            imagePath = "/resources/enemy/slime.png";
-        } else if(name.equals("Goblin")) {
-            imagePath = "/resources/enemy/goblin.png";
-        } else if(name.equals("Skeleton")) {
-            imagePath = "/resources/enemy/skeleton.png";
-        } else if(name.equals("Orc")) {
-            imagePath = "/resources/enemy/orc.png";
-        } else if(name.equals("Dark Mage")) {
-            imagePath = "/resources/enemy/dark_mage.png";
-        } else if(name.equals("Dragon Boss")) {
-            imagePath = "/resources/enemy/dragon.png";
-        }
+    if(name.equals("Slime")) {
+        imagePath = "/resources/enemy/slime_1.png";
 
-        try {
-            image = ImageIO.read(getClass().getResourceAsStream(imagePath));
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+    } else if(name.equals("Goblin")) {
+        imagePath = "/resources/enemy/gobline_idle_1.png";
+
+    } else if(name.equals("Skeleton")) {
+        imagePath = "/resources/enemy/skeleton_idle_1.png";
     }
+
+    try {
+
+        image = ImageIO.read(
+                getClass().getResourceAsStream(imagePath));
+
+    } catch(IOException e) {
+        e.printStackTrace();
+    }
+}
 
     public void draw(Graphics2D g2) {
         int screenX = worldX - gp.player.worldX + gp.player.screenX;

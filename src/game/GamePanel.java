@@ -139,25 +139,93 @@ public class GamePanel extends JPanel implements Runnable {
         startNextWave();
     }
 
-    public void startNextWave() {
+   public void startNextWave() {
 
-        if(currentWave == 1) {
-            enemy = new Enemy(this, "Slime", 500, 300, 50, 10);
-        } else if(currentWave == 2) {
-            enemy = new Enemy(this, "Goblin", 500, 300, 70, 15);
-        } else if(currentWave == 3) {
-            enemy = new Enemy(this,"Skeleton", 500, 300, 90, 18);
-        } else if(currentWave == 4) {
-            enemy = new Enemy(this,"Orc", 500, 300, 120, 22);
-        } else if(currentWave == 5) {
-            enemy = new Enemy(this,"Dark Mage", 500, 300, 140, 25);
-        } else if(currentWave == 6) {
-            enemy = new Enemy(this,"Dragon Boss", 500, 300, 200, 35);
-        }
+    if(currentWave == 1) {
 
-        message = "Wave " + currentWave + " started!";
+        enemy = new Enemy(
+                this,
+                "Slime",
+                500,
+                300,
+                50,
+                10
+        );
+
+    } else if(currentWave == 2) {
+
+        enemy = new Enemy(
+                this,
+                "Goblin",
+                500,
+                300,
+                70,
+                15
+        );
+
+    } else if(currentWave == 3) {
+
+        enemy = new Enemy(
+                this,
+                "Skeleton",
+                500,
+                300,
+                90,
+                18
+        );
+
+    } else if(currentWave == 4) {
+
+        enemy = new Enemy(
+                this,
+                "Goblin",
+                500,
+                300,
+                120,
+                22
+        );
+
+    } else if(currentWave == 5) {
+
+        enemy = new Enemy(
+                this,
+                "Skeleton",
+                500,
+                300,
+                150,
+                28
+        );
+
+    } else if(currentWave == 6) {
+
+        enemy = new Enemy(
+                this,
+                "Goblin",
+                500,
+                300,
+                220,
+                35
+        );
+
+    } else {
+
+        enemy = null;
+
+        JOptionPane.showMessageDialog(
+                null,
+                "CONGRATULATIONS!\n\n" +
+                "You defeated all enemy waves!\n\n" +
+                "Enemies Defeated: " + enemiesDefeated +
+                "\nTurns Taken: " + turnsTaken +
+                "\nGold Earned: " + gold
+        );
+
+        return;
     }
 
+    message = "Wave " + currentWave + " started!";
+}
+   
     public void openShop() {
 
         String[] choices = {
