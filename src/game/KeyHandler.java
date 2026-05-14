@@ -106,7 +106,7 @@ public class KeyHandler implements KeyListener {
 
                 gp.requestFocusInWindow();
             }
-
+             // MOVEMENT KEYS
             if(code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
                 upPressed = true;
             }
@@ -173,6 +173,7 @@ public class KeyHandler implements KeyListener {
                 gp.message = "Game resumed.";
             }
         }
+        
     }
 
     @Override

@@ -67,7 +67,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int gameState;
     public final int titleState = 0;
     public final int playState = 1;
-
+    
     public UI ui = new UI(this);
     public int characterState = 2;
 
@@ -90,12 +90,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
    public void chooseHeroes() {
-
     long currentTime = System.currentTimeMillis();
-
-    if(currentTime - lastHeroPickTime < 300) {
-        return;
-    }
 
     lastHeroPickTime = currentTime;
 
@@ -355,6 +350,11 @@ public class GamePanel extends JPanel implements Runnable {
             ui.draw(g2);
         }
 
+        
+        else if(gameState == characterState){
+            ui.draw(g2);
+        }  
+
         else if(gameState == playState) {
 
             tileM.draw(g2);
@@ -370,8 +370,8 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString("Gold: " + gold, 20, 40);
             g2.drawString("Items: " + inventory.size(), 20, 60);
             g2.drawString(message, 20, 85);
-        }
-
+        }      
+             
         g2.dispose();
     }
 }
