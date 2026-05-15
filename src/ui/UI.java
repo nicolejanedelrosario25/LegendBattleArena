@@ -27,7 +27,7 @@ public class UI {
     Graphics2D g2;
     public Image menuBackground;
     
-    public Rectangle playButton, exitButton;
+    public Rectangle playButton, exitButton, continueButton;
     public Font pixelFont;
     public int commandNum = 0;
     
@@ -147,7 +147,25 @@ public class UI {
         
         drawHeroDetails(rightX, rightY);  
         
-
+        //button
+        if(gp.party.size() == 3){
+            text = "START ADVENTURE";
+            x = gp.tileSize * 1;
+            y = gp.tileSize * 11;
+            
+            g2.setFont(pixelFont.deriveFont(Font.BOLD, 40F));
+            g2.setColor(Color.WHITE);
+            
+            if(commandNum == 5){
+                g2.setColor(Color.YELLOW);
+                g2.drawString(">", x - 30, y);
+            }
+            
+            g2.drawString(text, x, y);
+            continueButton = new Rectangle(x, y - 35, 400, 45);
+        }else{
+            continueButton = null;
+        }
         
     }
     

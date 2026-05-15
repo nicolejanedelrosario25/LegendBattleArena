@@ -67,29 +67,29 @@ public class KeyHandler implements KeyListener {
                 gp.ui.commandNum--;
 
                 if(gp.ui.commandNum < 0) {
-                    gp.ui.commandNum = 4;
+                    gp.ui.commandNum = (gp.party.size() == 3) ? 5: 4;   
                 }
             }
 
             if(code == KeyEvent.VK_DOWN) {
                 gp.ui.commandNum++;
-
-                if(gp.ui.commandNum > 4) {
+                int maxCommand = (gp.party.size() == 3) ? 5: 4;
+                        
+                if(gp.ui.commandNum > maxCommand) {
                     gp.ui.commandNum = 0;
                 }
             }
 
             if(code == KeyEvent.VK_ENTER) {
                 
-                if(enterPressed == false){
-                    gp.chooseHeroes();
-                    enterPressed = true;
-                    
+                if(gp.ui.commandNum == 5){
                     if(gp.party.size() == 3) {
                         gp.setupItems();
                         gp.gameState = gp.playState;
                     }
-                }   
+                }else {
+                    gp.chooseHeroes();
+                }
             }
         }
 

@@ -72,6 +72,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int characterState = 2;
 
     private long lastHeroPickTime = 0;
+    public long lastStateChangeTime = 0;
 
     public GamePanel() {
 
@@ -92,7 +93,9 @@ public class GamePanel extends JPanel implements Runnable {
    public void chooseHeroes() {
     long currentTime = System.currentTimeMillis();
 
-    lastHeroPickTime = currentTime;
+    if(currentTime - lastStateChangeTime < 250){
+        return;
+    }
 
     if(party.size() >= 3) {
         return;
@@ -121,6 +124,7 @@ public class GamePanel extends JPanel implements Runnable {
             break;
     }
 
+    lastStateChangeTime = currentTime;
     System.out.println("Hero Added! Party size: " + party.size());
 }
 
