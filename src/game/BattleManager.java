@@ -23,221 +23,231 @@ public class BattleManager {
     public BattleManager(GamePanel gp) {
         this.gp = gp;
     }
-
-  public void startBattle(Enemy enemy) {
-
-    gp.message = "Battle started against " + enemy.name + "!";
-
-    while(enemy.hp > 0) {
-
-        for(Character hero : gp.party) {
-
-            if(enemy.hp <= 0) break;
-
-            if(!hero.isAlive()) continue;
-
-            gp.turnsTaken++;
-
-            String[] options = {
-                "Attack",
-                "Skill",
-                "Item",
-                "Flee"
-            };
-
-            int choice = JOptionPane.showOptionDialog(
-                    null,
-                    hero.getName() +
-                    "\nHP: " + hero.getHp() + "/" + hero.getMaxHp() +
-                    "\n\nEnemy: " + enemy.name +
-                    "\nEnemy HP: " + enemy.hp +
-                    "\n\nLast Action: " + gp.message +
-                    "\n\nChoose your action:",
-                    "Battle",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    options,
-                    options[0]
-            );
-
-            // ATTACK
-            if(choice == 0) {
-
-                basicAttack(hero, enemy);
-            }
-
-            // SKILL
-            else if(choice == 1) {
-
-                int damage = hero.useSkill();
-
-                enemy.hp -= damage;
-
-                if(enemy.hp < 0) {
-                    enemy.hp = 0;
-                }
-
-                gp.message = hero.getName() +
-                        " used a skill and dealt " +
-                        damage + " damage!";
-            }
-
-            // ITEM
-            else if(choice == 2) {
-
-                try {
-                    useItem(hero);
-                } catch (EmptyInventoryException e) {
-                    gp.message = e.getMessage();
-                }
-            }
-
-            // FLEE
-           else if(choice == 3) {
-
-            if(gp.currentWave == 6) {
-                gp.message = "You cannot flee from the final boss!";
-                JOptionPane.showMessageDialog(null, "You cannot flee from the Dragon Lord!");
-            } else {
-                gp.message = "You fled from battle.";
-
-                gp.player.worldX = gp.tileSize * 12;
-                gp.player.worldY = gp.tileSize * 10;
-
-                return;
-            }
-        }
-
-            // ENEMY DEFEATED
-            if(enemy.hp <= 0) {
-
-                enemy.hp = 0;
-
-                gp.enemiesDefeated++;
-
-                int reward = gp.currentWave * 25;
-
-                gp.gold += reward;
-
-                gp.message = enemy.name +
-                        " defeated! You earned " +
-                        reward + " gold.";
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        enemy.name + " defeated!\n\n" +
-                        "+" + reward + " Gold earned!"
-                );
-
-                // FINAL WAVE
-                if(gp.currentWave == 6) {
-
-                    gp.enemy = null;
-
-                    gp.message = "Victory! All waves cleared.";
-
-                    String[] endOptions = {
-                        "Start Over",
-                        "Exit Game"
-                    };
-
-                    int endChoice = JOptionPane.showOptionDialog(
-                            null,
-                            "CONGRATULATIONS!\n\n" +
-                            "You defeated the Goblin Lord!\n\n" +
-                            "Enemies Defeated: " + gp.enemiesDefeated +
-                            "\nTurns Taken: " + gp.turnsTaken +
-                            "\nGold Remaining: " + gp.gold +
-                            "\n\nWhat do you want to do?",
-                            "VICTORY",
-                            JOptionPane.DEFAULT_OPTION,
-                            JOptionPane.INFORMATION_MESSAGE,
-                            null,
-                            endOptions,
-                            endOptions[0]
-                    );
-
-                    // START OVER
-                    if(endChoice == 0) {
-
-                        gp.currentWave = 1;
-                        gp.gold = 0;
-                        gp.enemiesDefeated = 0;
-                        gp.turnsTaken = 0;
-
-                        gp.party.clear();
-                        gp.inventory.clear();
-
-                        gp.player.worldX = gp.tileSize * 12;
-                        gp.player.worldY = gp.tileSize * 10;
-
-                        gp.ui.commandNum = 0;
-
-                        gp.gameState = gp.characterState;
-
-                        gp.message = "New game started. Choose your heroes.";
-                    }
-
-                    // EXIT GAME
-                    else {
-                        System.exit(0);
-                    }
-
-                    return;
-                }
-
-                // NEXT WAVE
-                gp.currentWave++;
-
-                int shopChoice = JOptionPane.showConfirmDialog(
-                        null,
-                        "Wave cleared!\nGold: " + gp.gold +
-                        "\nDo you want to open the shop?",
-                        "Shop",
-                        JOptionPane.YES_NO_OPTION
-                );
-
-                if(shopChoice == JOptionPane.YES_OPTION) {
-                    gp.openShop();
-                }
-
-                gp.player.worldX = gp.tileSize * 12;
-                gp.player.worldY = gp.tileSize * 10;
-
-                gp.startNextWave();
-
-                return;
-            }
-        }
-
-        // ENEMY TURN
-        if(enemy.hp > 0) {
-            enemyTurn(enemy);
-        }
-
-        // ALL HEROES DEAD
-        if(allHeroesDead()) {
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "DEFEAT!\n\n" +
-                    "Enemies Defeated: " + gp.enemiesDefeated +
-                    "\nTurns Taken: " + gp.turnsTaken +
-                    "\nGold Remaining: " + gp.gold
-            );
-
-            gp.enemy = null;
-
-            gp.message = "Defeat. All heroes were defeated.";
-
-            gp.player.worldX = gp.tileSize * 12;
-            gp.player.worldY = gp.tileSize * 10;
-
-            return;
-        }
+    
+        private void clearMovement(){
+        gp.keyH.upPressed = false;
+        gp.keyH.downPressed = false;
+        gp.keyH.rightPressed = false;
+        gp.keyH.leftPressed = false;
     }
-}
+
+    public void startBattle(Enemy enemy) {
+
+      gp.message = "Battle started against " + enemy.name + "!";
+
+      while(enemy.hp > 0) {
+
+          for(Character hero : gp.party) {
+
+              if(enemy.hp <= 0) break;
+
+              if(!hero.isAlive()) continue;
+
+              gp.turnsTaken++;
+
+              String[] options = {
+                  "Attack",
+                  "Skill",
+                  "Item",
+                  "Flee"
+              };
+
+              int choice = JOptionPane.showOptionDialog(
+                      null,
+                      hero.getName() +
+                      "\nHP: " + hero.getHp() + "/" + hero.getMaxHp() +
+                      "\n\nEnemy: " + enemy.name +
+                      "\nEnemy HP: " + enemy.hp +
+                      "\n\nLast Action: " + gp.message +
+                      "\n\nChoose your action:",
+                      "Battle",
+                      JOptionPane.DEFAULT_OPTION,
+                      JOptionPane.INFORMATION_MESSAGE,
+                      null,
+                      options,
+                      options[0]
+              );
+
+              // ATTACK
+              if(choice == 0) {
+
+                  basicAttack(hero, enemy);
+              }
+
+              // SKILL
+              else if(choice == 1) {
+
+                  int damage = hero.useSkill();
+
+                  enemy.hp -= damage;
+
+                  if(enemy.hp < 0) {
+                      enemy.hp = 0;
+                  }
+
+                  gp.message = hero.getName() +
+                          " used a skill and dealt " +
+                          damage + " damage!";
+              }
+
+              // ITEM
+              else if(choice == 2) {
+
+                  try {
+                      useItem(hero);
+                  } catch (EmptyInventoryException e) {
+                      gp.message = e.getMessage();
+                  }
+              }
+
+              // FLEE
+             else if(choice == 3) {
+
+              if(gp.currentWave == 6) {
+                  gp.message = "You cannot flee from the final boss!";
+                  JOptionPane.showMessageDialog(null, "You cannot flee from the Dragon Lord!");
+              } else {
+                  gp.message = "You fled from battle.";
+
+                  gp.player.worldX = gp.tileSize * 12;
+                  gp.player.worldY = gp.tileSize * 10;
+                  clearMovement();
+                  return;
+              }
+          }
+
+              // ENEMY DEFEATED
+              if(enemy.hp <= 0) {
+
+                  enemy.hp = 0;
+
+                  gp.enemiesDefeated++;
+
+                  int reward = gp.currentWave * 25;
+
+                  gp.gold += reward;
+
+                  gp.message = enemy.name +
+                          " defeated! You earned " +
+                          reward + " gold.";
+
+                  JOptionPane.showMessageDialog(
+                          null,
+                          enemy.name + " defeated!\n\n" +
+                          "+" + reward + " Gold earned!"
+                  );
+
+                  // FINAL WAVE
+                  if(gp.currentWave == 6) {
+
+                      gp.enemy = null;
+
+                      gp.message = "Victory! All waves cleared.";
+
+                      String[] endOptions = {
+                          "Start Over",
+                          "Exit Game"
+                      };
+
+                      int endChoice = JOptionPane.showOptionDialog(
+                              null,
+                              "CONGRATULATIONS!\n\n" +
+                              "You defeated the Goblin Lord!\n\n" +
+                              "Enemies Defeated: " + gp.enemiesDefeated +
+                              "\nTurns Taken: " + gp.turnsTaken +
+                              "\nGold Remaining: " + gp.gold +
+                              "\n\nWhat do you want to do?",
+                              "VICTORY",
+                              JOptionPane.DEFAULT_OPTION,
+                              JOptionPane.INFORMATION_MESSAGE,
+                              null,
+                              endOptions,
+                              endOptions[0]
+                      );
+
+                      // START OVER
+                      if(endChoice == 0) {
+
+                          gp.currentWave = 1;
+                          gp.gold = 0;
+                          gp.enemiesDefeated = 0;
+                          gp.turnsTaken = 0;
+
+                          gp.party.clear();
+                          gp.inventory.clear();
+
+                          gp.player.worldX = gp.tileSize * 12;
+                          gp.player.worldY = gp.tileSize * 10;
+
+                          gp.ui.commandNum = 0;
+
+                          gp.gameState = gp.characterState;
+
+                          gp.message = "New game started. Choose your heroes.";
+                      }
+
+                      // EXIT GAME
+                      else {
+                          System.exit(0);
+                      }
+//                      clearMovement();
+                      return;
+                  }
+
+                  // NEXT WAVE
+                  gp.currentWave++;
+
+                  int shopChoice = JOptionPane.showConfirmDialog(
+                          null,
+                          "Wave cleared!\nGold: " + gp.gold +
+                          "\nDo you want to open the shop?",
+                          "Shop",
+                          JOptionPane.YES_NO_OPTION
+                  );
+
+                  if(shopChoice == JOptionPane.YES_OPTION) {
+                      gp.openShop();
+                  }
+
+                  gp.player.worldX = gp.tileSize * 12;
+                  gp.player.worldY = gp.tileSize * 10;
+
+                  clearMovement();
+                  gp.startNextWave();
+
+                  return;
+              }
+          }
+
+          // ENEMY TURN
+          if(enemy.hp > 0) {
+              enemyTurn(enemy);
+          }
+
+          // ALL HEROES DEAD
+          if(allHeroesDead()) {
+
+              JOptionPane.showMessageDialog(
+                      null,
+                      "DEFEAT!\n\n" +
+                      "Enemies Defeated: " + gp.enemiesDefeated +
+                      "\nTurns Taken: " + gp.turnsTaken +
+                      "\nGold Remaining: " + gp.gold
+              );
+
+              gp.enemy = null;
+
+              gp.message = "Defeat. All heroes were defeated.";
+
+              gp.player.worldX = gp.tileSize * 12;
+              gp.player.worldY = gp.tileSize * 10;
+
+              clearMovement();
+              return;
+          }
+      }
+  }
+  
 
     public void basicAttack(Character hero, Enemy enemy) {
 
