@@ -13,9 +13,14 @@ import java.awt.Rectangle;
 public class Entity {
     public int worldX;
     public int worldY;
-    public int speed;
-
-    public String direction;
+    public int speed = 4;
+    public String direction = "down";
+    
+//    public int screenX;
+//    public int screenY;
+    
+//
+//    public String direction;
     
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
     public boolean collisionOn = false;

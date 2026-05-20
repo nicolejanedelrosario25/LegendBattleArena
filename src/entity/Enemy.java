@@ -5,6 +5,7 @@
 package entity;
 
 import game.GamePanel;
+import java.awt.Color;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -25,11 +26,11 @@ public class Enemy extends Entity {
     public int maxHp;
     public int attackPower;
 
-    BufferedImage image1, image2;
-    Image gifImage;
+    public BufferedImage image1, image2;
+    public Image gifImage;
 
     int spriteCounter = 0;
-    int spriteNum = 1;
+    public int spriteNum = 1;
     int actionLockCounter = 0;
 
     public Enemy(GamePanel gp, String name, int worldX, int worldY, int hp, int attackPower) {
@@ -53,7 +54,7 @@ public class Enemy extends Entity {
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_2.png"));
 
             } else if(name.equals("Goblin")) {
-                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/gobline_idle_1.png"));
+                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/goblin_idle_1.png"));
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/goblin_idle_2.png"));
 
             } else if(name.equals("Skeleton")) {
@@ -91,7 +92,7 @@ public class Enemy extends Entity {
 
         actionLockCounter++;
 
-        if(actionLockCounter > 25) {
+        if(actionLockCounter > 90) {
 
             int random = (int)(Math.random() * 4);
 
@@ -123,6 +124,10 @@ public class Enemy extends Entity {
 
     public void draw(Graphics2D g2) {
 
+        if (gp.player == null){
+            return;
+        }
+        
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
@@ -136,11 +141,26 @@ public class Enemy extends Entity {
             g2.drawImage(gifImage, screenX, screenY, size, size, null);
         } else {
             BufferedImage image = (spriteNum == 1) ? image1 : image2;
-            g2.drawImage(image, screenX, screenY, size, size, null);
+            if(image != null){
+                g2.drawImage(image, screenX, screenY, size, size, null);
+            }
+        }
+        
+        //setup color properties for tag string and overlay UI bars
+        g2.setColor(Color.WHITE);
+        g2.drawString(name, screenX + 15, screenY - 10);
+        
+        //draw health bar backing box
+        g2.setColor(Color.DARK_GRAY);
+        g2.fillRect(screenX, screenY - 22, size, 6);
+        
+        int barWidth = 0;
+        if(maxHp > 0 && hp > 0){
+            barWidth = Math.max(0, (hp*size)/maxHp);
         }
 
-        g2.drawString(name, screenX + 15, screenY - 10);
-
-        g2.fillRect(screenX, screenY - 20, hp * size / maxHp, 10);
+        
+        g2.setColor(Color.RED);
+        g2.fillRect(screenX, screenY - 22, barWidth, 6);
     }
 }

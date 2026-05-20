@@ -44,8 +44,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     Thread gameThread;
 
-    KeyHandler keyH = new KeyHandler(this);
-    public Player player = new Player(this, keyH);
+    public KeyHandler keyH = new KeyHandler(this);
 
     public TileManager tileM = new TileManager(this);
     public CollisionChecker cChecker = new CollisionChecker(this);
@@ -62,35 +61,44 @@ public class GamePanel extends JPanel implements Runnable {
     public int enemiesDefeated = 0;
     public int turnsTaken = 0;
 
+    public final int shopState = 4;
+    
     public String message = "Explore the map and touch the enemy to battle.";
 
     public int gameState;
     public final int titleState = 0;
     public final int playState = 1;
+    public int characterState = 2;
+    public int battleState = 3;
     
     public UI ui = new UI(this);
-    public int characterState = 2;
 
     private long lastHeroPickTime = 0;
     public long lastStateChangeTime = 0;
 
+    public int currentHeroIndex = 0;
+    public entity.Character player;
+    public MouseHandler mouseH = new MouseHandler(this);
+    public Sound sound = new Sound();
+
+    private int currentMusicIndex = -1;
+    
     public GamePanel() {
 
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
 
+        this.addMouseListener(mouseH);
+        this.addMouseMotionListener(mouseH);
         this.addKeyListener(keyH);
         this.setFocusable(true);
 
         gameState = titleState;
-
-        MouseHandler mouseH = new MouseHandler(this);
-        this.addMouseListener(mouseH);
-        this.addMouseMotionListener(mouseH);
     }
 
    public void chooseHeroes() {
+       
     long currentTime = System.currentTimeMillis();
 
     if(currentTime - lastStateChangeTime < 250){
@@ -104,23 +112,23 @@ public class GamePanel extends JPanel implements Runnable {
     switch(ui.commandNum) {
 
         case 0:
-            party.add(new Warrior());
+            party.add(new Warrior(this));
             break;
 
         case 1:
-            party.add(new Mage());
+            party.add(new Mage(this));
             break;
 
         case 2:
-            party.add(new Tank());
+            party.add(new Tank(this));
             break;
 
         case 3:
-            party.add(new Healer());
+            party.add(new Healer(this));
             break;
 
         case 4:
-            party.add(new Archer());
+            party.add(new Archer(this));
             break;
     }
 
@@ -148,8 +156,8 @@ public class GamePanel extends JPanel implements Runnable {
             enemy = new Enemy(
                     this,
                     "Slime",
-                    tileSize * 18,
-                    tileSize * 8,
+                    tileSize * 16,
+                    tileSize * 9,
                     50,
                     10
             );
@@ -163,7 +171,7 @@ public class GamePanel extends JPanel implements Runnable {
                     this,
                     "Goblin",
                     tileSize * 22,
-                    tileSize * 15,
+                    tileSize * 18,
                     90,
                     18
             );
@@ -176,8 +184,8 @@ public class GamePanel extends JPanel implements Runnable {
             enemy = new Enemy(
                     this,
                     "Skeleton",
-                    tileSize * 10,
-                    tileSize * 18,
+                    tileSize * 25,
+                    tileSize * 42,
                     130,
                     24
             );
@@ -239,9 +247,17 @@ public class GamePanel extends JPanel implements Runnable {
             message = "Victory! All waves cleared.";
         }
     }
+    
+    public void setUpGame(){
+        if(!party.isEmpty()){
+            player = party.get(0);
+        }
+    }
 
     public void openShop() {
-
+        this.gameState = shopState;
+        ui.commandNum = 0;
+        
         String[] choices = {
             "Buy Health Potion - 20 Gold",
             "Buy Mana Elixir - 25 Gold",
@@ -302,7 +318,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void startGameThread() {
-
+        playMusic(0);
         gameThread = new Thread(this);
         gameThread.start();
     }
@@ -331,12 +347,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
 
-        if(gameState == playState) {
+        if(gameState == playState && player != null) {
             player.update();
 
             if(enemy != null) {
                 enemy.update();
             }
+        }
+        else if(gameState == battleState){
+//            battleManager.update();
         }
     }
 
@@ -349,33 +368,55 @@ public class GamePanel extends JPanel implements Runnable {
         if(gameState == titleState) {
             ui.draw(g2);
         }
-
         else if(gameState == characterState) {
             ui.draw(g2);
-        }
-
-        
-        else if(gameState == characterState){
-            ui.draw(g2);
-        }  
-
+        }        
         else if(gameState == playState) {
 
             tileM.draw(g2);
-
+            
+            if(player != null){
+                player.draw(g2);
+            }
             if(enemy != null) {
                 enemy.draw(g2);
             }
 
-            player.draw(g2);
+            ui.draw(g2);
 
             g2.setColor(Color.white);
-            g2.drawString("Wave: " + currentWave, 20, 20);
-            g2.drawString("Gold: " + gold, 20, 40);
-            g2.drawString("Items: " + inventory.size(), 20, 60);
-            g2.drawString(message, 20, 85);
-        }      
+            g2.drawString("Wave: " + currentWave, 20, 485);
+            g2.drawString("Gold: " + gold, 20, 505);
+            g2.drawString("Items: " + inventory.size(), 20, 525);
+            g2.drawString(message, 20, 550);
+        }
+        else if(gameState == battleState){
+            ui.draw(g2);
+        }
              
         g2.dispose();
+    }
+    
+    public void playMusic(int i){
+        if(i == currentMusicIndex){
+            return;
+        }
+        sound.stop();
+        currentMusicIndex = i;
+        sound.setFile(i);
+        sound.play();
+        sound.loop();
+    }
+    
+    public void stopMusic(){
+        if(currentMusicIndex == -1){
+            return;
+        }
+        sound.stop();
+        currentMusicIndex = -1;
+    }
+    
+    public void playSE(int i){
+        sound.playSE(i);
     }
 }

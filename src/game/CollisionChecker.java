@@ -4,7 +4,8 @@
  */
 package game;
 
-import entity.Player;
+import entity.Entity;
+//import entity.Player;
 
 /**
  *
@@ -18,12 +19,12 @@ public class CollisionChecker {
         this.gp = gp;
     }
 
-    public boolean checkTile(Player player, int nextX, int nextY) {
+    public boolean checkTile(Entity entity, int nextX, int nextY) {
 
-        int entityLeftWorldX = nextX + player.solidArea.x;
-        int entityRightWorldX = nextX + player.solidArea.x + player.solidArea.width - 1;
-        int entityTopWorldY = nextY + player.solidArea.y;
-        int entityBottomWorldY = nextY + player.solidArea.y + player.solidArea.height - 1;
+        int entityLeftWorldX = nextX + entity.solidArea.x;
+        int entityRightWorldX = nextX + entity.solidArea.x + entity.solidArea.width - 1;
+        int entityTopWorldY = nextY + entity.solidArea.y;
+        int entityBottomWorldY = nextY + entity.solidArea.y + entity.solidArea.height - 1;
 
         int leftCol = entityLeftWorldX / gp.tileSize;
         int rightCol = entityRightWorldX / gp.tileSize;
