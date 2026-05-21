@@ -15,7 +15,10 @@ import javax.imageio.ImageIO;
 public class Archer extends Character {
 
     public Archer(GamePanel gp) {
-        super(gp, "Archer", 90, 20, 4);
+          super(gp, "Archer", 90, 22, 4);
+
+            this.maxMana = 40;
+            this.mana = 40;
         
         getCharacterImage("/resources/player/sprites_display/archer_sc.png");
         getArcherSprite();

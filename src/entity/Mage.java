@@ -15,8 +15,11 @@ import javax.imageio.ImageIO;
 public class Mage extends Character {
 
     public Mage(GamePanel gp) {
-        super(gp, "Mage", 80, 25, 3);
-        
+        super(gp, "Mage", 80, 15, 3);
+
+        this.maxMana = 60;
+        this.mana = 60;
+
         getCharacterImage("/resources/player/sprites_display/mage_sc.png");
         
         getMageSprite();

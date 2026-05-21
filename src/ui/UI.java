@@ -385,155 +385,177 @@ public class UI {
     }
     
     public void drawBattleScreen(){
-        if(battleBackground != null){
-            g2.drawImage(battleBackground, 0, 0, gp.screenWidth, gp.screenHeight, null);
-        }else{
-            g2.setColor(new Color(40, 40, 60));
-            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
-        }
-        
-        // ── Hero positions: staggered diagonal like RPG battle (front/mid/back) ──
-        // FIXED: positions now form a diagonal instead of a straight vertical line
-        // Hero 0 = front  (lower-left)
-        // Hero 1 = middle (center-left, slightly up)
-        // Hero 2 = back   (upper-left, further back)
-        int[] heroX = {
-            gp.tileSize * 2,                    // front hero X
-            gp.tileSize * 2 + 30,              // mid hero X (slightly right = further back)
-            gp.tileSize * 2 + 60               // back hero X
-        };
-        int[] heroY = {
-            gp.screenHeight / 2 - gp.tileSize, // front hero Y (lower)
-            gp.screenHeight / 2 - (int)(gp.tileSize * 2.2), // mid hero Y
-            gp.screenHeight / 2 - (int)(gp.tileSize * 3.5)  // back hero Y (highest)
-        };
-        
-        if(gp.party != null && !gp.party.isEmpty()){
-            for(int i = gp.party.size() - 1; i >= 0; i--){
-                entity.Character hero = gp.party.get(i);
-                if(hero == null){
-                    continue;
-                }
-                int hx = (i < heroX.length) ? heroX[i] : heroX[heroX.length - 1];
-                int hy = (i < heroY.length) ? heroY[i] : heroY[heroY.length - 1];
-                if(!hero.isAlive()){
-                    g2.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.35f));
-                }
-                //this
-                if(hero.right1 != null){
-                    g2.drawImage(hero.right1, hx, hy, gp.tileSize * 2, gp.tileSize * 2, null);
-                }else{
-                    g2.setColor(Color.BLUE);
-                    g2.fillRect(hx, hy, gp.tileSize * 2, gp.tileSize * 2);
-                }//until this
-                
-//                g2.drawImage(hero.right1, hx, hy, gp.tileSize * 2, gp.tileSize * 2, null);
-                
-                //reset alpha
-                g2.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 1.0f));
-                
-                //arrow on hero
-                if(i == gp.currentHeroIndex && hero.isAlive()){
-                    g2.setFont(fontBattleHeroArrow);
-                    g2.setColor(Color.YELLOW);
-                    g2.drawString(">", hx- 22, hy + gp.tileSize);
-                }                 
-            }
-        }
-        
-        if(gp.enemy != null && gp.enemy.hp > 0){
-            int enemyX = gp.screenWidth - (gp.tileSize * 5);
-            int enemyY = (gp.screenHeight / 2) - (gp.tileSize * 2);
-            
-            int enemySize = gp.enemy.name.equals("Dragon") ? 180: 96;
-            if(gp.enemy.name.equals("Dragon")){
-                enemyX -= 40;
-            }
-            
-            if(gp.enemy.name.equals("Dragon") && gp.enemy.gifImage != null){
-                g2.drawImage(gp.enemy.gifImage, enemyX, enemyY, enemySize, enemySize, null);
-            }else{
-                java.awt.image.BufferedImage activeEnemySprite = (gp.enemy.spriteNum == 1) ? gp.enemy.image1 : gp.enemy.image2;
-                if(activeEnemySprite != null){
-                    g2.drawImage(activeEnemySprite, enemyX, enemyY, enemySize, enemySize, null);
-                }
-            }
-        }
-        
-        int hudY = gp.screenHeight - (int)(gp.tileSize * 3.2);
-        int hudHeight = (int)(gp.tileSize * 2.8);
-        int leftBoxX = 20;
-        int leftBoxWidth = gp.tileSize * 7;
-        drawSubWindow(leftBoxX, hudY, leftBoxWidth, hudHeight);
-        
-        int rightBoxWidth = gp.tileSize * 4;
-        int rightBoxX = gp.screenWidth - rightBoxWidth - 20;
-        drawSubWindow(rightBoxX, hudY, rightBoxWidth, hudHeight);
-        
-        if(gp.party != null && !gp.party.isEmpty()){
-            for(int i = 0; i < gp.party.size(); i++){
-                entity.Character hero = gp.party.get(i);
-                if(hero == null){
-                    continue;
-                }
-                int rowY = hudY + 35 + (i * 32);
-                
-                g2.setFont(fontStats);
-                g2.setColor(hero.isAlive() ? Color.WHITE : Color.GRAY);
-                g2.drawString(hero.getName(), leftBoxX + 20, rowY);
-                
-                g2.setFont(fontHPBarText);
-                g2.drawString("HP: " + hero.getHp() + "/" + hero.getMaxHp(), leftBoxX + 105, rowY);
-                
-                int barX = leftBoxX + 190;
-                int barY = rowY - 10;
-                int barW = 95;
-                int barH = 8;
-                g2.setColor(Color.DARK_GRAY);
-                g2.fillRect(barX, barY, barW, barH);
-                if(hero.isAlive()){
-                    double hpScale = (double)hero.getHp() / hero.getMaxHp();
-                    Color barColor = hpScale > 0.5 ? new Color(0, (int)(255 * hpScale), 0) : new Color(255, (int)(255 * hpScale * 2), 0);
-                    g2.setColor(barColor);
-                    g2.fillRect(barX, barY, (int)(barW * hpScale), barH); 
-                }
+    if(battleBackground != null){
+        g2.drawImage(battleBackground, 0, 0, gp.screenWidth, gp.screenHeight, null);
+    }else{
+        g2.setColor(new Color(40, 40, 60));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+    }
 
+    int[] heroX = {
+        gp.tileSize * 2,
+        gp.tileSize * 2 + 30,
+        gp.tileSize * 2 + 60
+    };
+
+    int[] heroY = {
+        gp.screenHeight / 2 - gp.tileSize,
+        gp.screenHeight / 2 - (int)(gp.tileSize * 2.2),
+        gp.screenHeight / 2 - (int)(gp.tileSize * 3.5)
+    };
+
+    if(gp.party != null && !gp.party.isEmpty()){
+        for(int i = gp.party.size() - 1; i >= 0; i--){
+            entity.Character hero = gp.party.get(i);
+            if(hero == null){
+                continue;
             }
-            drawBattleMenu();
+
+            int hx = (i < heroX.length) ? heroX[i] : heroX[heroX.length - 1];
+            int hy = (i < heroY.length) ? heroY[i] : heroY[heroY.length - 1];
+
+            if(!hero.isAlive()){
+                g2.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.35f));
+            }
+
+            if(hero.right1 != null){
+                g2.drawImage(hero.right1, hx, hy, gp.tileSize * 2, gp.tileSize * 2, null);
+            }else{
+                g2.setColor(Color.BLUE);
+                g2.fillRect(hx, hy, gp.tileSize * 2, gp.tileSize * 2);
+            }
+
+            g2.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 1.0f));
+
+            if(i == gp.currentHeroIndex && hero.isAlive()){
+                g2.setFont(fontBattleHeroArrow);
+                g2.setColor(Color.YELLOW);
+                g2.drawString(">", hx - 22, hy + gp.tileSize);
+            }
         }
-        
-        if(gp.enemy != null){
-            g2.setFont(fontDetails);
+    }
+
+    if(gp.enemy != null && gp.enemy.hp > 0){
+        int enemyX = gp.screenWidth - (gp.tileSize * 5);
+        int enemyY = (gp.screenHeight / 2) - (gp.tileSize * 2);
+
+        int enemySize = gp.enemy.name.equals("Dragon") ? 260 : 96;
+
+        if(gp.enemy.name.equals("Dragon")){
+            enemyX -= 90;
+            enemyY -= 40;
+        }
+
+        if(gp.enemy.name.equals("Dragon") && gp.enemy.gifImage != null){
+            g2.drawImage(gp.enemy.gifImage, enemyX, enemyY, enemySize, enemySize, null);
+        }else{
+            java.awt.image.BufferedImage activeEnemySprite =
+                    (gp.enemy.spriteNum == 1) ? gp.enemy.image1 : gp.enemy.image2;
+
+            if(activeEnemySprite != null){
+                g2.drawImage(activeEnemySprite, enemyX, enemyY, enemySize, enemySize, null);
+            }
+        }
+    }
+
+    int hudY = gp.screenHeight - (int)(gp.tileSize * 3.2);
+    int hudHeight = (int)(gp.tileSize * 2.8);
+
+    int leftBoxX = 20;
+    int leftBoxWidth = gp.tileSize * 7;
+    drawSubWindow(leftBoxX, hudY, leftBoxWidth, hudHeight);
+
+    int rightBoxWidth = gp.tileSize * 4;
+    int rightBoxX = gp.screenWidth - rightBoxWidth - 20;
+    drawSubWindow(rightBoxX, hudY, rightBoxWidth, hudHeight);
+
+    if(gp.party != null && !gp.party.isEmpty()){
+        for(int i = 0; i < gp.party.size(); i++){
+            entity.Character hero = gp.party.get(i);
+
+            if(hero == null){
+                continue;
+            }
+
+            int rowY = hudY + 30 + (i * 38);
+
+            g2.setFont(fontStats);
+            g2.setColor(hero.isAlive() ? Color.WHITE : Color.GRAY);
+            g2.drawString(hero.getName(), leftBoxX + 20, rowY);
+
+            g2.setFont(fontHPBarText);
+
+            // HP
             g2.setColor(Color.WHITE);
-            g2.drawString(gp.enemy.name.toUpperCase(), rightBoxX + 15, hudY + 30);
-            
-            g2.setFont(fontHPBarText); // Safe fast resize
-            g2.drawString("HP: " + gp.enemy.hp + "/" + gp.enemy.maxHp, rightBoxX + 15, hudY + 52);  
+            g2.drawString("HP: " + hero.getHp() + "/" + hero.getMaxHp(), leftBoxX + 110, rowY);
+
+            int hpBarX = leftBoxX + 220;
+            int hpBarY = rowY - 10;
+            int hpBarW = 90;
+            int hpBarH = 7;
+
+            g2.setColor(Color.DARK_GRAY);
+            g2.fillRect(hpBarX, hpBarY, hpBarW, hpBarH);
+
+            if(hero.isAlive()){
+                double hpScale = (double)hero.getHp() / hero.getMaxHp();
+
+                g2.setColor(Color.GREEN);
+                g2.fillRect(hpBarX, hpBarY, (int)(hpBarW * hpScale), hpBarH);
+            }
+
+            // MP
+            g2.setColor(Color.CYAN);
+            g2.drawString("MP: " + hero.getMana() + "/" + hero.getMaxMana(), leftBoxX + 110, rowY + 15);
+
+            int mpBarX = leftBoxX + 220;
+            int mpBarY = rowY + 5;
+            int mpBarW = 90;
+            int mpBarH = 6;
+
+            g2.setColor(Color.DARK_GRAY);
+            g2.fillRect(mpBarX, mpBarY, mpBarW, mpBarH);
+
+            double mpScale = (double)hero.getMana() / hero.getMaxMana();
+
+            g2.setColor(Color.CYAN);
+            g2.fillRect(mpBarX, mpBarY, (int)(mpBarW * mpScale), mpBarH);
         }
-        
-        //enemy hp bar
-        int eBarX = rightBoxX + 15;
-        int eBarY = hudY + 60;
-        int eBarW = rightBoxWidth - 30;
-        int eBarH = 10;
-        g2.setColor(Color.DARK_GRAY);
-        g2.fillRect(eBarX, eBarY, eBarW, eBarH);
-        
-        if(gp.enemy.maxHp > 0){
-            double ehpScale = (double) gp.enemy.hp / gp.enemy.maxHp;
-            g2.setColor(new Color(220, 50, 50));
-            g2.fillRect(eBarX, eBarY, (int)(eBarW * ehpScale), eBarH);
-        }
-        
-        //hp bar border
+
+        drawBattleMenu();
+    }
+
+    if(gp.enemy != null){
+        g2.setFont(fontDetails);
         g2.setColor(Color.WHITE);
-        g2.setStroke(new BasicStroke(1));
-        g2.drawRect(eBarX, eBarY, eBarW, eBarH);
-        
-        if(gp.message != null){
-            g2.setFont(fontDetails);
-            g2.setColor(Color.YELLOW);
-            g2.drawString(gp.message, gp.tileSize, gp.screenHeight - 40);
-        }
+        g2.drawString(gp.enemy.name.toUpperCase(), rightBoxX + 15, hudY + 30);
+
+        g2.setFont(fontHPBarText);
+        g2.drawString("HP: " + gp.enemy.hp + "/" + gp.enemy.maxHp, rightBoxX + 15, hudY + 52);
+    }
+
+    int eBarX = rightBoxX + 15;
+    int eBarY = hudY + 60;
+    int eBarW = rightBoxWidth - 30;
+    int eBarH = 10;
+
+    g2.setColor(Color.DARK_GRAY);
+    g2.fillRect(eBarX, eBarY, eBarW, eBarH);
+
+    if(gp.enemy != null && gp.enemy.maxHp > 0){
+        double ehpScale = (double)gp.enemy.hp / gp.enemy.maxHp;
+        g2.setColor(new Color(220, 50, 50));
+        g2.fillRect(eBarX, eBarY, (int)(eBarW * ehpScale), eBarH);
+    }
+
+    g2.setColor(Color.WHITE);
+    g2.setStroke(new BasicStroke(1));
+    g2.drawRect(eBarX, eBarY, eBarW, eBarH);
+
+    if(gp.message != null){
+        g2.setFont(fontHPBarText);
+        g2.setColor(Color.YELLOW);
+        g2.drawString(gp.message, leftBoxX + 20, hudY + hudHeight + 8);
+    }
     }
 }

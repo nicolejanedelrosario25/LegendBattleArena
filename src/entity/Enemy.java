@@ -134,7 +134,7 @@ public class Enemy extends Entity {
         int size = 96;
 
         if(name.equals("Dragon")) {
-            size = 180;
+            size = 260;
         }
 
         if(name.equals("Dragon") && gifImage != null) {

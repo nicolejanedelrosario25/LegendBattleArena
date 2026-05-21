@@ -156,10 +156,10 @@ public class GamePanel extends JPanel implements Runnable {
             enemy = new Enemy(
                     this,
                     "Slime",
-                    tileSize * 16,
-                    tileSize * 9,
-                    50,
-                    10
+                    tileSize * 18,
+                    tileSize * 8,
+                    120,
+                    12
             );
         }
 
@@ -172,7 +172,7 @@ public class GamePanel extends JPanel implements Runnable {
                     "Goblin",
                     tileSize * 22,
                     tileSize * 18,
-                    90,
+                    130,
                     18
             );
         }
@@ -186,7 +186,7 @@ public class GamePanel extends JPanel implements Runnable {
                     "Skeleton",
                     tileSize * 25,
                     tileSize * 42,
-                    130,
+                    150,
                     24
             );
         }
@@ -235,8 +235,8 @@ public class GamePanel extends JPanel implements Runnable {
         enemy = new Enemy(
                 this,
                 "Dragon",
-                tileSize * 30,
-                tileSize * 14,
+                tileSize * 33,
+                tileSize * 18,
                 450,
                 55
         );
@@ -254,69 +254,66 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void openShop() {
-        this.gameState = shopState;
-        ui.commandNum = 0;
-        
-        String[] choices = {
-            "Buy Health Potion - 20 Gold",
-            "Buy Mana Elixir - 25 Gold",
-            "Buy Revive Scroll - 40 Gold",
-            "Exit Shop"
-        };
+  public void openShop() {
 
-        boolean shopping = true;
+    String[] choices = {
+        "Health Potion - 20G",
+        "Mana Elixir - 25G",
+        "Revive Scroll - 40G",
+        "Exit"
+    };
 
-        while(shopping) {
+    boolean shopping = true;
 
-            int choice = JOptionPane.showOptionDialog(
-                    null,
-                    "SHOP\nGold: " + gold +
-                    "\nInventory Items: " + inventory.size(),
-                    "Shop",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    choices,
-                    choices[0]
-            );
+    while(shopping) {
 
-            if(choice == 0) {
-                if(gold >= 20) {
-                    gold -= 20;
-                    inventory.add(new Item("Health Potion", "Restores 30 HP.", "heal"));
-                    message = "Bought Health Potion.";
-                } else {
-                    JOptionPane.showMessageDialog(null, "Not enough gold.");
-                }
+        int choice = JOptionPane.showOptionDialog(
+                null,
+                "SHOP\n" +
+                "Gold: " + gold +
+                "\nItems: " + inventory.size(),
+                "Shop",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                choices,
+                choices[0]
+        );
+
+        if(choice == 0) {
+            if(gold >= 20) {
+                gold -= 20;
+                inventory.add(new Item("Health Potion", "Restores 30 HP.", "heal"));
+                message = "Bought Health Potion.";
+            } else {
+                JOptionPane.showMessageDialog(null, "Not enough gold.");
             }
 
-            else if(choice == 1) {
-                if(gold >= 25) {
-                    gold -= 25;
-                    inventory.add(new Item("Mana Elixir", "Boosts skill damage.", "boost"));
-                    message = "Bought Mana Elixir.";
-                } else {
-                    JOptionPane.showMessageDialog(null, "Not enough gold.");
-                }
+        } else if(choice == 1) {
+            if(gold >= 25) {
+                gold -= 25;
+                inventory.add(new Item("Mana Elixir", "Boosts skill damage.", "boost"));
+                message = "Bought Mana Elixir.";
+            } else {
+                JOptionPane.showMessageDialog(null, "Not enough gold.");
             }
 
-            else if(choice == 2) {
-                if(gold >= 40) {
-                    gold -= 40;
-                    inventory.add(new Item("Revive Scroll", "Revives a hero.", "revive"));
-                    message = "Bought Revive Scroll.";
-                } else {
-                    JOptionPane.showMessageDialog(null, "Not enough gold.");
-                }
+        } else if(choice == 2) {
+            if(gold >= 40) {
+                gold -= 40;
+                inventory.add(new Item("Revive Scroll", "Revives a hero.", "revive"));
+                message = "Bought Revive Scroll.";
+            } else {
+                JOptionPane.showMessageDialog(null, "Not enough gold.");
             }
 
-            else {
-                shopping = false;
-            }
+        } else {
+            shopping = false;
         }
     }
 
+    repaint();
+}
     public void startGameThread() {
         playMusic(0);
         gameThread = new Thread(this);

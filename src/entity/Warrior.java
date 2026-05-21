@@ -16,6 +16,9 @@ public class Warrior extends Character {
 
     public Warrior(GamePanel gp) {
         super(gp, "Warrior", 120, 18, 8);
+
+        this.maxMana = 40;
+        this.mana = 40;
         
         getCharacterImage("/resources/player/sprites_display/warrior_sc.png");
         
