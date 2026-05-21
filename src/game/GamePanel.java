@@ -61,6 +61,9 @@ public class GamePanel extends JPanel implements Runnable {
     public int enemiesDefeated = 0;
     public int turnsTaken = 0;
 
+    public int screenShakeX = 0;
+    public int screenShakeTimer = 0;
+    
     public final int shopState = 4;
     
     public String message = "Explore the map and touch the enemy to battle.";
@@ -156,8 +159,8 @@ public class GamePanel extends JPanel implements Runnable {
             enemy = new Enemy(
                     this,
                     "Slime",
-                    tileSize * 18,
-                    tileSize * 8,
+                    tileSize * 20,
+                    tileSize * 16,
                     120,
                     12
             );
@@ -197,7 +200,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             enemy = new Enemy(
                     this,
-                    "Goblin",
+                    "Orc",
                     tileSize * 26,
                     tileSize * 9,
                     180,
@@ -211,7 +214,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             enemy = new Enemy(
                     this,
-                    "Skeleton",
+                    "Necromancer",
                     tileSize * 6,
                     tileSize * 20,
                     250,
@@ -351,8 +354,19 @@ public class GamePanel extends JPanel implements Runnable {
                 enemy.update();
             }
         }
-        else if(gameState == battleState){
-//            battleManager.update();
+        if(gameState == battleState){
+            battleManager.update();
+        }
+        
+        //screenshake
+        if(screenShakeTimer > 0){
+            screenShakeX = (screenShakeTimer % 2 == 0) ? 5 : -5;
+            
+            screenShakeTimer--;
+            
+            if(screenShakeTimer <= 0){
+                screenShakeX = 0;
+            }
         }
     }
 
@@ -361,7 +375,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
-
+        g2.translate(screenShakeX, 0);
+        
         if(gameState == titleState) {
             ui.draw(g2);
         }

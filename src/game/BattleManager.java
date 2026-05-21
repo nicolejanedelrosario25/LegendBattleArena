@@ -6,13 +6,8 @@ import entity.Enemy;
 import object.Item;
 
 import javax.swing.JOptionPane;
-import java.lang.reflect.Field;
 import java.util.Random;
-import java.util.WeakHashMap;
 
-/**
- * @author nicol
- */
 public class BattleManager {
 
     GamePanel gp;
@@ -20,8 +15,12 @@ public class BattleManager {
 
     public Enemy activeEnemy;
 
-    private WeakHashMap<Character, Integer> manaStore = new WeakHashMap<>();
-    private WeakHashMap<Character, Integer> maxManaStore = new WeakHashMap<>();
+    private boolean waitingForEnemyTurn = false;
+    private long enemyTurnStartTime = 0;
+    private final int ENEMY_DELAY = 1200;
+
+    private boolean playerTaunted = false;
+    private int tauntTurns = 0;
 
     public BattleManager(GamePanel gp) {
         this.gp = gp;
@@ -43,6 +42,8 @@ public class BattleManager {
         gp.ui.commandNum = 0;
         gp.gameState = gp.battleState;
 
+        waitingForEnemyTurn = false;
+
         gp.message = "Battle started against " + enemy.name + "!";
 
         gp.stopMusic();
@@ -51,7 +52,73 @@ public class BattleManager {
         skipDeadHeroes();
     }
 
+   public void update() {
+
+    // Enemy delayed turn
+    if(waitingForEnemyTurn) {
+
+        long currentTime = System.currentTimeMillis();
+
+        if(currentTime - enemyTurnStartTime >= ENEMY_DELAY) {
+
+            enemyTurn(activeEnemy);
+
+            waitingForEnemyTurn = false;
+        }
+
+        return;
+        }
+
+        // Safety check
+        if(gp.party == null || gp.party.isEmpty()) {
+            return;
+        }
+
+        if(gp.currentHeroIndex >= gp.party.size()) {
+            return;
+        }
+
+        Character hero = gp.party.get(gp.currentHeroIndex);
+
+        if(hero != null) {
+
+            // Move forward while attacking
+            if(hero.attacking) {
+
+                hero.battleX += 12;
+
+                if(hero.battleX >= gp.enemy.battleX - 120) {
+
+                    hero.attacking = false;
+                    hero.returning = true;
+
+                    basicAttack(hero, gp.enemy);
+
+                    gp.message = hero.getName() + " attacked!";
+                }
+            }
+
+            // Move back
+            if(hero.returning) {
+
+                hero.battleX -= 12;
+
+                if(hero.battleX <= hero.originalBattleX) {
+
+                    hero.battleX = hero.originalBattleX;
+                    hero.returning = false;
+
+                    advanceTurn();
+                }
+            }
+        }
+    }
+
     public void handlePlayerChoice() {
+
+        if(waitingForEnemyTurn) {
+            return;
+        }
 
         if(activeEnemy == null || activeEnemy.hp <= 0) {
             return;
@@ -68,22 +135,64 @@ public class BattleManager {
         Character currentHero = gp.party.get(gp.currentHeroIndex);
 
         if(!currentHero.isAlive()) {
-            advanceTurn();
+            gp.currentHeroIndex++;
+            skipDeadHeroes();
             return;
         }
 
         gp.turnsTaken++;
 
+        if(playerTaunted) {
+            gp.ui.commandNum = 0;
+            gp.message = "Taunted! You are forced to attack!";
+        }
+
         switch(gp.ui.commandNum) {
 
-            case 0: // ATTACK
-                basicAttack(currentHero, activeEnemy);
-                break;
+            case 0:
+                currentHero.attacking = true;
+                gp.message = currentHero.getName() + " attacks!";
+
+                return;
 
             case 1: // SKILL
-                if(getMana(currentHero) >= 20) {
 
-                    setMana(currentHero, getMana(currentHero) - 20);
+                if(currentHero.getMana() < 20) {
+                    gp.message = currentHero.getName() + " does not have enough mana!";
+
+                    JOptionPane.showMessageDialog(
+                            null,
+                            currentHero.getName() + " needs 20 mana to use a skill!"
+                    );
+
+                    return;
+                }
+
+                currentHero.setMana(currentHero.getMana() - 20);
+
+                if(currentHero.getName().equals("Healer")) {
+
+                    for(Character hero : gp.party) {
+                        if(hero.isAlive()) {
+                            hero.setHp(hero.getHp() + 30);
+                        }
+                    }
+
+                    gp.message = "Healer restored 30 HP to all allies!";
+                }
+
+                else if(currentHero.getName().equals("Tank")) {
+
+                    gp.message = "Tank used Shield! Enemy attack weakened.";
+
+                    activeEnemy.attackPower -= 5;
+
+                    if(activeEnemy.attackPower < 1) {
+                        activeEnemy.attackPower = 1;
+                    }
+                }
+
+                else {
 
                     int damage = currentHero.useSkill();
 
@@ -96,21 +205,11 @@ public class BattleManager {
                     gp.message = currentHero.getName() +
                             " used a skill and dealt " +
                             damage + " damage!";
-
-                } else {
-                    gp.message = currentHero.getName() + " does not have enough mana!";
-
-                    JOptionPane.showMessageDialog(
-                            null,
-                            currentHero.getName() + " needs 20 mana to use a skill!"
-                    );
-
-                    return;
                 }
 
                 break;
 
-            case 2: // ITEM
+            case 2://item
                 try {
                     boolean used = useItem(currentHero);
 
@@ -127,29 +226,77 @@ public class BattleManager {
 
             case 3: // FLEE
 
-            if(gp.currentWave == 6) {
-                gp.message = "You cannot flee from the final boss!";
-                JOptionPane.showMessageDialog(null, "You cannot flee from the Dragon Lord!");
-                return;
-            }
+                // Cannot flee from final boss
+                if(gp.currentWave == 6) {
 
-            gp.message = "You fled from battle.";
+                    gp.message = "You cannot flee from the final boss!";
 
-            gp.player.worldX = gp.tileSize * 17;
-            gp.player.worldY = gp.tileSize * 24;
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "You cannot flee from the Dragon Lord!"
+                    );
 
-            clearMovement();
-
-            gp.stopMusic();
-            gp.playMusic(2);
-
-            gp.gameState = gp.playState;
-
-            gp.requestFocusInWindow();
-
-            return;
+                    return;
                 }
 
+                // 60% success chance
+                int fleeChance = random.nextInt(100) + 1;
+
+                if(fleeChance <= 60) {
+
+                    // SUCCESS
+                    gp.message = "You successfully fled from battle!";
+
+                    gp.player.worldX = gp.tileSize * 17;
+                    gp.player.worldY = gp.tileSize * 24;
+
+                    clearMovement();
+
+                    gp.stopMusic();
+                    gp.playMusic(2);
+
+                    gp.gameState = gp.playState;
+                    gp.requestFocusInWindow();
+
+                    return;
+                }
+
+                else {
+
+                    // FAILED ESCAPE
+                    int damage = activeEnemy.attackPower  + 10;
+
+                    gp.message = "Failed to flee! All heroes took " +
+                            damage + " damage!";
+
+                    for(Character hero : gp.party) {
+
+                        if(hero.isAlive()) {
+
+                            hero.receiveDamage(damage);
+                        }
+                    }
+
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Escape failed!\nAll party members took " +
+                            damage + " damage!"
+                    );
+
+                    // Check if everyone died
+                    if(allHeroesDead()) {
+
+                        handlePartyDefeat();
+                        return;
+                    }
+
+                    // Enemy gets turn after failed flee
+                    waitingForEnemyTurn = true;
+                    enemyTurnStartTime = System.currentTimeMillis();
+                }
+                break;
+                
+            }
         advanceTurn();
     }
 
@@ -166,25 +313,14 @@ public class BattleManager {
         }
 
         gp.currentHeroIndex++;
-
         skipDeadHeroes();
 
         if(gp.currentHeroIndex >= gp.party.size()) {
 
-            enemyTurn(activeEnemy);
+            waitingForEnemyTurn = true;
+            enemyTurnStartTime = System.currentTimeMillis();
 
-            if(activeEnemy.hp <= 0) {
-                activeEnemy.hp = 0;
-                handleEnemyDefeated();
-                return;
-            }
-
-            gp.currentHeroIndex = 0;
-            skipDeadHeroes();
-
-            if(allHeroesDead()) {
-                handlePartyDefeat();
-            }
+            gp.message = "Enemy is preparing to move...";
         }
     }
 
@@ -195,7 +331,7 @@ public class BattleManager {
         while(attempts < gp.party.size()) {
 
             if(gp.currentHeroIndex >= gp.party.size()) {
-                gp.currentHeroIndex = 0;
+                break;
             }
 
             if(gp.party.get(gp.currentHeroIndex).isAlive()) {
@@ -340,10 +476,21 @@ public class BattleManager {
 
         int chance = random.nextInt(100) + 1;
 
+        if(playerTaunted) {
+
+            if(chance <= 70) {
+                gp.message = hero.getName() + " was taunted and missed the attack!";
+                playerTaunted = false;
+                tauntTurns = 0;
+                return;
+            }
+        }
+
         if(chance <= 15) {
             gp.message = hero.getName() + " attacked but missed!";
         } else {
-
+            animateAttack(hero, enemy);
+             
             int damage = hero.attack();
 
             if(chance >= 85) {
@@ -365,6 +512,14 @@ public class BattleManager {
 
             if(enemy.hp < 0) {
                 enemy.hp = 0;
+            }
+        }
+
+        if(playerTaunted) {
+            tauntTurns--;
+
+            if(tauntTurns <= 0) {
+                playerTaunted = false;
             }
         }
     }
@@ -439,11 +594,7 @@ public class BattleManager {
 
         else if(selected.contains("Mana Elixir")) {
 
-            setMana(hero, getMana(hero) + 40);
-
-            if(getMana(hero) > getMaxMana(hero)) {
-                setMana(hero, getMaxMana(hero));
-            }
+            hero.setMana(hero.getMana() + 40);
 
             gp.message = hero.getName() + " restored 40 Mana!";
 
@@ -493,14 +644,22 @@ public class BattleManager {
 
             Character target = alive.get(random.nextInt(alive.size()));
 
+            int beforeHp = target.getHp();
+
             target.receiveDamage(enemy.attackPower);
+
+            int actualDamage = beforeHp - target.getHp();
 
             gp.message = enemy.name +
                     " attacked " +
                     target.getName() +
                     " for " +
-                    enemy.attackPower +
+                    actualDamage +
                     " damage!";
+
+            if(!target.isAlive()) {
+                gp.message += " " + target.getName() + " was defeated!";
+            }
         }
 
         else if(enemyChoice == 1) {
@@ -509,7 +668,16 @@ public class BattleManager {
         }
 
         else {
+            playerTaunted = true;
+            tauntTurns = 1;
             gp.message = enemy.name + " used Taunt!";
+        }
+  
+        gp.currentHeroIndex = 0;
+        skipDeadHeroes();
+
+        if(allHeroesDead()) {
+            handlePartyDefeat();
         }
     }
 
@@ -524,45 +692,55 @@ public class BattleManager {
 
         return true;
     }
+    public void animateAttack(Character hero, Enemy enemy){
 
-    private int getMana(Character hero) {
+        hero.attacking = true;
 
-        try {
-            Field field = hero.getClass().getSuperclass().getDeclaredField("mana");
-            field.setAccessible(true);
-            return field.getInt(hero);
-        } catch(Exception e) {
-            if(!manaStore.containsKey(hero)) {
-                manaStore.put(hero, 100);
+        new Thread(() -> {
+
+            // TARGET POSITION
+            int targetX = enemy.battleX - 120;
+
+            // MOVE FORWARD
+            while(hero.battleX < targetX){
+
+                hero.battleX += 12;
+
+                gp.repaint();
+                
+                try{
+                    Thread.sleep(16);
+                }catch(Exception e){
+
+                }
             }
 
-            return manaStore.get(hero);
-        }
-    }
+            // IMPACT SHAKE
+            gp.screenShakeTimer = 12;
 
-    private void setMana(Character hero, int value) {
+            try{
+                Thread.sleep(120);
+            }catch(Exception e){
 
-        try {
-            Field field = hero.getClass().getSuperclass().getDeclaredField("mana");
-            field.setAccessible(true);
-            field.setInt(hero, value);
-        } catch(Exception e) {
-            manaStore.put(hero, value);
-        }
-    }
-
-    private int getMaxMana(Character hero) {
-
-        try {
-            Field field = hero.getClass().getSuperclass().getDeclaredField("maxMana");
-            field.setAccessible(true);
-            return field.getInt(hero);
-        } catch(Exception e) {
-            if(!maxManaStore.containsKey(hero)) {
-                maxManaStore.put(hero, 100);
             }
 
-            return maxManaStore.get(hero);
-        }
+            // RETURN
+            while(hero.battleX > hero.originalBattleX){
+
+                hero.battleX -= 12;
+                
+                gp.repaint();
+
+                try{
+                    Thread.sleep(16);
+                }catch(Exception e){
+
+                }
+            }
+
+            hero.battleX = hero.originalBattleX;
+            hero.attacking = false;
+
+        }).start();
     }
 }

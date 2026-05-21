@@ -44,6 +44,14 @@ public abstract class Character extends Entity {
 
     public abstract int attack();
     public abstract int useSkill();
+    //battle animation
+    public int battleX;
+    public int battleY;
+    public int originalBattleX;
+    public int originalBattleY;
+    public boolean battlePositionInitialized = false;
+    public boolean attacking = false;
+    public boolean returning = false;
 
     public Character(GamePanel gp, String name, int maxHp, int attackPower, int defensePower) {
 
@@ -115,14 +123,15 @@ public abstract class Character extends Entity {
 
     public void checkEnemyCollision() {
 
-        if(gp.enemy == null) return;
+        if(gp.enemy == null) {
+            return;
+        }
 
-        if(this.worldX + solidArea.x < gp.enemy.worldX + gp.tileSize &&
-           this.worldX + solidArea.x + solidArea.width > gp.enemy.worldX &&
-           this.worldY + solidArea.y < gp.enemy.worldY + gp.tileSize &&
-           this.worldY + solidArea.y + solidArea.height > gp.enemy.worldY) {
-
-            gp.battleManager.startBattle(gp.enemy);
+        if (this.worldX + solidArea.x < gp.enemy.worldX + gp.tileSize &&
+            this.worldX + solidArea.x + solidArea.width > gp.enemy.worldX &&
+            this.worldY + solidArea.y < gp.enemy.worldY + gp.tileSize &&
+            this.worldY + solidArea.y + solidArea.height > gp.enemy.worldY) {
+                gp.battleManager.startBattle(gp.enemy);
         }
     }
 
@@ -175,23 +184,39 @@ public abstract class Character extends Entity {
     public String getName() {
         return name;
     }
+//<<<<<<< Updated upstream
 
+//=======
+//    
+//>>>>>>> Stashed changes
     public int getHp() {
-        return hp;
-    }
+       return hp;
+    }  
 
     public int getMaxHp() {
         return maxHp;
     }
 
+//<<<<<<< Updated upstream
+//=======
+    public int getAttackPower() {
+        return attackPower;
+    }
+
+    public int getDefensePower() {
+        return defensePower;
+    }
+//    
+//>>>>>>> Stashed changes
     public void setHp(int hp) {
-        if(hp < 0) {
-            this.hp = 0;
-        } else if(hp > maxHp) {
-            this.hp = maxHp;
-        } else {
-            this.hp = hp;
-        }
+//        if(hp < 0) {
+//            this.hp = 0;
+//        } else if(hp > maxHp) {
+//            this.hp = maxHp;
+//        } else {
+//            this.hp = hp;
+//        }
+        this.hp = Math.max(0, Math.min(hp, maxHp));
     }
 
     public int getMana() {
@@ -212,19 +237,12 @@ public abstract class Character extends Entity {
         }
     }
 
-    public int getAttackPower() {
-        return attackPower;
-    }
-
-    public int getDefensePower() {
-        return defensePower;
-    }
-
     public boolean isAlive() {
         return hp > 0;
     }
 
     public void receiveDamage(int damage) {
+//<<<<<<< Updated upstream
 
         int finalDamage = damage - defensePower;
 
@@ -233,8 +251,15 @@ public abstract class Character extends Entity {
         }
 
         setHp(hp - finalDamage);
+//=======
+        double reduction = Math.min(defensePower / 100.0, 0.30);
+        finalDamage = (int)(damage * (1.0 - reduction));
+        finalDamage = Math.max(1, finalDamage);
+        setHp(hp - finalDamage);      
+//>>>>>>> Stashed changes
     }
-}
  
+}
+
 
   

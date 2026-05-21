@@ -25,6 +25,9 @@ public class Enemy extends Entity {
     public int hp;
     public int maxHp;
     public int attackPower;
+    
+    public int battleX;
+    public int battleY;
 
     public BufferedImage image1, image2;
     public Image gifImage;
@@ -49,30 +52,46 @@ public class Enemy extends Entity {
     public void getEnemyImage() {
 
         try {
-            if(name.equals("Slime")) {
+            
+            switch(name){
+
+                case "Slime":
                 image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_1.png"));
                 image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_2.png"));
+                break;
 
-            } else if(name.equals("Goblin")) {
-                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/goblin_idle_1.png"));
-                image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/goblin_idle_2.png"));
+                case "Goblin":
+                    image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/goblin_idle_1.png"));
+                    image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/goblin_idle_2.png"));
+                    break;
 
-            } else if(name.equals("Skeleton")) {
-                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_1.png"));
-                image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_2.png"));
+                case "Skeleton":
+                    image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_1.png"));
+                    image2 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/skeleton_idle_2.png"));
+                    break;
 
-            } else if(name.equals("Dragon")) {
-                ImageIcon icon = new ImageIcon(
+                case "Orc":
+                    gifImage = new ImageIcon(
+                        getClass().getResource("/resources/enemy/orc_idle.gif")
+                    ).getImage();
+                    break;
+
+                case "Necromancer":
+                    gifImage = new ImageIcon(
+                        getClass().getResource("/resources/enemy/necromancer_idle.gif")
+                    ).getImage();
+                    break;
+
+                case "Dragon":
+                    gifImage = new ImageIcon(
                         getClass().getResource("/resources/enemy/dragon_idle.gif")
-                );
+                    ).getImage();
+                    break;
 
-                gifImage = icon.getImage();
-                image1 = null;
-                image2 = null;
-
-            } else {
-                image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_1.png"));
-                image2 = image1;
+                default:
+                    image1 = ImageIO.read(getClass().getResourceAsStream("/resources/enemy/slime_1.png"));
+                    image2 = image1;
+                    break;
             }
 
         } catch(Exception e) {
@@ -136,11 +155,20 @@ public class Enemy extends Entity {
         if(name.equals("Dragon")) {
             size = 260;
         }
-
-        if(name.equals("Dragon") && gifImage != null) {
+//
+//        if(name.equals("Dragon") && gifImage != null) {
+//            g2.drawImage(gifImage, screenX, screenY, size, size, null);
+//        } else {
+//            BufferedImage image = (spriteNum == 1) ? image1 : image2;
+//            if(image != null){
+//                g2.drawImage(image, screenX, screenY, size, size, null);
+//            }
+//        }
+        if(gifImage != null){
             g2.drawImage(gifImage, screenX, screenY, size, size, null);
-        } else {
+        }else{
             BufferedImage image = (spriteNum == 1) ? image1 : image2;
+            
             if(image != null){
                 g2.drawImage(image, screenX, screenY, size, size, null);
             }
